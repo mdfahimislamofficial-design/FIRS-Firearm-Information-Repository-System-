@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+ <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="FIRS" content="width=device-width, initial-scale=1.0">
+        <title>FIRS.com</title>
+        <link rel="stylesheet" href="templates/LogIn.css">
+        <link rel="icon" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: #fefcf9;
+            color: #1e1e2a;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* HEADER */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #ececec;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #1a1a2a, #6b5e4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            cursor: pointer;
+            text-decoration: none;
+            color: #2c2c34;
+            font-weight: 500;
+            font-size: 15px;
+            transition: 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #000;
+            border-bottom-color: #c7a17a;
+        }
+
+        .cart-count {
+            background: #c7a17a;
+            color: white;
+            border-radius: 30px;
+            font-size: 12px;
+            padding: 0px 8px;
+            font-weight: 600;
+            line-height: 20px;
+            min-width: 20px;
+            text-align: center;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #f3f1ef;
+            border-top: 1px solid #e3dfdb;
+            padding: 32px 0;
+            margin-top: 48px;
+            text-align: center;
+            color: #5e5c66;
+            font-size: 14px;
+        }
+
+        /* PAGES */
+        .page {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* LANDING PAGE STYLES */
+        .hero-section {
+            height: 75vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.35)),
+                url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1600&auto=format');
+            background-size: cover;
+            background-position: center 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 0 0 48px 48px;
+            margin-bottom: 48px;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 500;
+            letter-spacing: -1.5px;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.92);
+            margin: 16px 0 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #1e1e2a;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 1.5px solid white;
+            color: white;
+        }
+
+        .btn-outline-light:hover {
+            background: white;
+            color: #1e1e2a;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            margin: 48px 0 24px;
+            text-align: center;
+        }
+
+        /* Feature grid (why us) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+            margin: 48px 0;
+            text-align: center;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 28px 20px;
+            border-radius: 32px;
+            border: 1px solid #efefef;
+        }
+
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        .feature-item h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            color: #5e5c66;
+            font-size: 14px;
+        }
+
+        /* Product grid & cards (reused) */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 32px;
+            margin: 24px 0 48px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.25s ease;
+            border: 1px solid #efefef;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 28px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .img-box {
+            height: 280px;
+            overflow: hidden;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .img-box img {
+            transform: scale(1.04);
+        }
+
+        .product-info {
+            padding: 20px 18px 22px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: #c7a17a;
+            margin: 10px 0 14px;
+        }
+
+        .add-to-cart {
+            background: #2c2c34;
+            width: 100%;
+            border-radius: 40px;
+            padding: 10px;
+            font-weight: 500;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-to-cart:hover {
+            background: #c7a17a;
+        }
+
+        /* Login form on landing */
+        .login-card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            margin: 48px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            border: 1px solid #efefef;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-card h3 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 32px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .alert {
+            background: #f8e3db;
+            color: #a5572c;
+            padding: 12px;
+            border-radius: 32px;
+            margin: 16px 0;
+        }
+
+        /* Shop filter bar */
+        .filter-bar {
+            background: white;
+            border-radius: 32px;
+            padding: 20px 24px;
+            margin: 24px 0 32px;
+            border: 1px solid #efefef;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 32px;
+            row-gap: 16px;
+        }
+
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        input[type="range"] {
+            width: 180px;
+        }
+
+        /* Cart table */
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 18px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ececec;
+        }
+
+        .cart-summary {
+            background: #f9f7f5;
+            border-radius: 24px;
+            padding: 24px;
+            margin-top: 24px;
+            text-align: right;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #b15e5e;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        @media (max-width: 700px) {
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .header-inner {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    </head>
+   
+<body>
+    <div class="header">
+        <div class="container header-inner">
+            <div class="logo" data-nav-landing>✦ FIRS</div>
+            <div class="nav-links">
+                <a data-page="landing">Home</a>
+                <a data-page="shop">Shop</a>
+                <a data-page="cart">Cart <span class="cart-count" id="cartCountNav">0</span></a>
+                <a data-page="account">Account</a>
+                <a data-page="checkout">Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div id="page-landing" class="page">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1>FIRS</h1>
+                    <p>Firearm Inventory Repository System</p>
+                    <button class="btn btn-outline-light" data-nav-shop>Shop the collection →</button>
+                </div>
+            </div>
+            <div class="container">
+                <div class="section-title">New Products</div>
+                <div id="landingFeaturedGrid" class="product-grid"></div>
+                <div style="text-align: center; margin-bottom: 48px;">
+                    <button class="btn" data-nav-shop>View all products →</button>
+                </div>
+                <!-- SHORT VIEW OF EVERYTHING: features / brand highlights -->
+                <div class="section-title">Why FIRS</div>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🛠️</div>
+                        <h3>Expert Gunsmiths</h3>
+                        <p>Highly experienced professionals ensuring precision repair and maintenance.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Precision & Quality</h3>
+                        <p>Advanced tools and techniques to maintain top firearm performance.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Fast Service</h3>
+                        <p>Quick turnaround time with reliable and efficient service.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure Handling</h3>
+                        <p>Strict safety protocols and secure handling of all firearms.</p>
+                    </div>
+                </div>
+                <!-- LOGIN FORM ON LANDING PAGE (lastly) -->
+                <div id="landingLoginSection" class="login-card">
+                    <h3>Access your account</h3>
+                    <div id="landingLoginPanel">
+                        <form id="landingLoginForm">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="landingLoginEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="landingLoginPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-full">Log in</button>
+                            <p id="landingLoginMsg" style="margin-top:12px; font-size:13px; text-align:center;"></p>
+                            <p style="text-align:center; margin-top:16px; font-size:13px;">New here? <a
+                                    data-page="account"
+                                    style="cursor:pointer; color:#c7a17a; text-decoration:underline;">Create account</a>
+                            </p>
+                        </form>
+                    </div>
+                    <div id="landingLoggedInPanel" style="display:none; text-align:center;">
+                        <p>Welcome back, <strong id="landingUserName"></strong>!</p>
+                        <button id="landingLogoutBtn" class="btn-outline btn" style="margin-top:12px;">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOP PAGE (full product grid + filters) -->
+        <div id="page-shop" class="page">
+            <div class="container">
+                <h2 style="margin: 32px 0 8px">The Collections</h2>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label>Max price: $<span id="priceValue">500,000.00</span></label>
+                            <input type="range" id="priceFilter" min="0" max="500000" value="500000" step="100">
+                        </div>
+                        <div class="radio-group">
+                            <label><input type="radio" name="type" value="Knife" class="type-filter"> Knife</label>
+                            <label><input type="radio" name="type" value="Handguns" class="type-filter"> Handguns</label>
+                            <label><input type="radio" name="type" value="Rifles" class="type-filter"> Rifles</label>
+                            <label><input type="radio" name="type" value="Shotguns" class="type-filter"> Shotguns</label>
+                            <label><input type="radio" name="type" value="Automatic Weapons" class="type-filter"> Automatic Weapons</label>
+                        </div>
+                        <div class="radio-group">
+                            <label>Sort:</label>
+                            <label><input type="radio" name="sort" value="low"> Price ↑</label>
+                            <label><input type="radio" name="sort" value="high"> Price ↓</label>
+                            <label><input type="radio" name="sort" value="" checked> Default</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="shopProductGrid" class="product-grid"></div>
+            </div>
+        </div>
+
+        <!-- CART PAGE -->
+        <div id="page-cart" class="page">
+            <div class="container">
+                <h2 style="margin: 32px 0 16px">Your Cart</h2>
+                <div id="cartContainer"></div>
+            </div>
+        </div>
+
+        <!-- ACCOUNT PAGE (full signup with extra fields) -->
+        <div id="page-account" class="page">
+            <div class="form-card">
+                <div style="display:flex; gap:16px; margin-bottom:24px; border-bottom:1px solid #eee">
+                    <button id="showLoginBtn" class="btn" style="flex:1; background:#1e1e2a;">Login</button>
+                    <button id="showSignupBtn" class="btn"
+                        style="flex:1; background:transparent; border:1px solid #000000;">Sign Up</button>
+                </div>
+                <div id="loginPanel">
+                    <form id="loginForm">
+                        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="loginPassword"
+                                required></div>
+                        <button type="submit" class="btn btn-full">Log in</button>
+                        <p id="loginMsg" style="margin-top:12px;"></p>
+                    </form>
+                </div>
+                <div id="signupPanel" style="display:none;">
+                    <form id="signupForm">
+                        <div class="form-group"><label>Full name *</label><input type="text" id="signupName" required>
+                        </div>
+                        <div class="form-group"><label>Email *</label><input type="email" id="signupEmail" required>
+                        </div>
+                        <div class="form-group"><label>Password *</label><input type="password" id="signupPassword"
+                                required></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="signupDob"></div>
+                        <div class="form-group"><label>NID Number</label><input type="text" id="signupNid"
+                                placeholder="National ID"></div>
+                        <div class="form-group"><label>License attachment</label><input type="file" id="signupLicense"
+                                accept="image/*,application/pdf"></div>
+                        <div class="form-group"><label>Comment / Bio</label><textarea id="signupComment" rows="3"
+                                placeholder="Tell us about your style..."></textarea></div>
+                        <button type="submit" class="btn btn-full">Create account</button>
+                        <p id="signupMsg" style="margin-top:12px;"></p>
+                    </form>
+                </div>
+                <div id="logoutPanel" style="display:none; text-align:center; margin-top:20px;">
+                    <p>Logged in as <strong id="currentUserEmail"></strong></p>
+                    <button type="button" id="showLoginBtn" class="btn">Login</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHECKOUT (Payment Gateway) -->
+        <div id="page-checkout" class="page">
+            <div class="form-card">
+                <h3>Secure payment</h3>
+                <div id="paymentSummary"></div>
+                <form id="paymentForm">
+                    <div class="form-group"><label>Cardholder name</label><input type="text" id="cardName" required>
+                    </div>
+                    <div class="form-group"><label>Card number</label><input type="text" id="cardNumber"
+                            placeholder="4242 4242 4242 4242" maxlength="19" required></div>
+                    <div style="display:flex; gap:16px;">
+                        <div class="form-group" style="flex:1"><label>Expiry (MM/YY)</label><input type="text"
+                                id="cardExpiry" placeholder="12/28" required></div>
+                        <div class="form-group" style="flex:1"><label>CVC</label><input type="password" id="cardCvc"
+                                maxlength="3" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-full" style="background:#2c2c34">Pay now</button>
+                    <div id="paymentMsg" style="margin-top:16px; text-align:center"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">© 2026 FIRS — Streamlining lawful firearm registration & inventory control. > Official government portal | Continuous system monitoring & support</div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+
+ </html>
