@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+ <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="FIRS" content="width=device-width, initial-scale=1.0">
+        <title>FIRS.com</title>
+        <link rel="stylesheet" href="templates/LogIn.css">
+        <link rel="icon" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            background: #fefcf9;
+            color: #1e1e2a;
+            line-height: 1.4;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* HEADER */
+        .header {
+            background: #ffffff;
+            border-bottom: 1px solid #ececec;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 16px 0;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #1a1a2a, #6b5e4a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            cursor: pointer;
+            text-decoration: none;
+            color: #2c2c34;
+            font-weight: 500;
+            font-size: 15px;
+            transition: 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #000;
+            border-bottom-color: #c7a17a;
+        }
+
+        .cart-count {
+            background: #c7a17a;
+            color: white;
+            border-radius: 30px;
+            font-size: 12px;
+            padding: 0px 8px;
+            font-weight: 600;
+            line-height: 20px;
+            min-width: 20px;
+            text-align: center;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        /* FOOTER */
+        .footer {
+            background: #f3f1ef;
+            border-top: 1px solid #e3dfdb;
+            padding: 32px 0;
+            margin-top: 48px;
+            text-align: center;
+            color: #5e5c66;
+            font-size: 14px;
+        }
+
+        /* PAGES */
+        .page {
+            display: none;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .active-page {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* LANDING PAGE STYLES */
+        .hero-section {
+            height: 75vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.35)),
+                url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1600&auto=format');
+            background-size: cover;
+            background-position: center 40%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            border-radius: 0 0 48px 48px;
+            margin-bottom: 48px;
+        }
+
+        .hero-content h1 {
+            font-size: 64px;
+            font-weight: 500;
+            letter-spacing: -1.5px;
+            color: white;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-content p {
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.92);
+            margin: 16px 0 28px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #1e1e2a;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 40px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn-outline-light {
+            background: transparent;
+            border: 1.5px solid white;
+            color: white;
+        }
+
+        .btn-outline-light:hover {
+            background: white;
+            color: #1e1e2a;
+        }
+
+        .section-title {
+            font-size: 32px;
+            font-weight: 500;
+            letter-spacing: -0.5px;
+            margin: 48px 0 24px;
+            text-align: center;
+        }
+
+        /* Feature grid (why us) */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 32px;
+            margin: 48px 0;
+            text-align: center;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 28px 20px;
+            border-radius: 32px;
+            border: 1px solid #efefef;
+        }
+
+        .feature-icon {
+            font-size: 36px;
+            margin-bottom: 16px;
+        }
+
+        .feature-item h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            color: #5e5c66;
+            font-size: 14px;
+        }
+
+        /* Product grid & cards (reused) */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 32px;
+            margin: 24px 0 48px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            transition: 0.25s ease;
+            border: 1px solid #efefef;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 28px -12px rgba(0, 0, 0, 0.12);
+        }
+
+        .img-box {
+            height: 280px;
+            overflow: hidden;
+        }
+
+        .img-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .product-card:hover .img-box img {
+            transform: scale(1.04);
+        }
+
+        .product-info {
+            padding: 20px 18px 22px;
+        }
+
+        .product-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: 600;
+            color: #c7a17a;
+            margin: 10px 0 14px;
+        }
+
+        .add-to-cart {
+            background: #2c2c34;
+            width: 100%;
+            border-radius: 40px;
+            padding: 10px;
+            font-weight: 500;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .add-to-cart:hover {
+            background: #c7a17a;
+        }
+
+        /* Login form on landing */
+        .login-card {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            margin: 48px 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            border: 1px solid #efefef;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .login-card h3 {
+            font-size: 24px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 32px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+        }
+
+        .btn-full {
+            width: 100%;
+        }
+
+        .alert {
+            background: #f8e3db;
+            color: #a5572c;
+            padding: 12px;
+            border-radius: 32px;
+            margin: 16px 0;
+        }
+
+        /* Shop filter bar */
+        .filter-bar {
+            background: white;
+            border-radius: 32px;
+            padding: 20px 24px;
+            margin: 24px 0 32px;
+            border: 1px solid #efefef;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 32px;
+            row-gap: 16px;
+        }
+
+        .checkbox-group,
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        input[type="range"] {
+            width: 180px;
+        }
+
+        /* Cart table */
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .cart-table th,
+        .cart-table td {
+            padding: 18px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ececec;
+        }
+
+        .cart-summary {
+            background: #f9f7f5;
+            border-radius: 24px;
+            padding: 24px;
+            margin-top: 24px;
+            text-align: right;
+        }
+
+        .qty-input {
+            width: 70px;
+            padding: 6px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #b15e5e;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        @media (max-width: 700px) {
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .header-inner {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+    </head>
+   
+<body>
+    <div class="header">
+        <div class="container header-inner">
+            <div class="logo" data-nav-landing>✦ FIRS</div>
+            <div class="nav-links">
+                <a data-page="landing">Home</a>
+                <a data-page="shop">Shop</a>
+                <a data-page="cart">Cart <span class="cart-count" id="cartCountNav">0</span></a>
+                <a data-page="account">Account</a>
+                <a data-page="checkout">Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    <main>
+        <div id="page-landing" class="page">
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1>FIRS</h1>
+                    <p>Firearm Inventory Repository System</p>
+                    <button class="btn btn-outline-light" data-nav-shop>Shop the collection →</button>
+                </div>
+            </div>
+            <div class="container">
+                <div class="section-title">New Products</div>
+                <div id="landingFeaturedGrid" class="product-grid"></div>
+                <div style="text-align: center; margin-bottom: 48px;">
+                    <button class="btn" data-nav-shop>View all products →</button>
+                </div>
+                <!-- SHORT VIEW OF EVERYTHING: features / brand highlights -->
+                <div class="section-title">Why FIRS</div>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">🛠️</div>
+                        <h3>Expert Gunsmiths</h3>
+                        <p>Highly experienced professionals ensuring precision repair and maintenance.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🎯</div>
+                        <h3>Precision & Quality</h3>
+                        <p>Advanced tools and techniques to maintain top firearm performance.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Fast Service</h3>
+                        <p>Quick turnaround time with reliable and efficient service.</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔒</div>
+                        <h3>Secure Handling</h3>
+                        <p>Strict safety protocols and secure handling of all firearms.</p>
+                    </div>
+                </div>
+                <!-- LOGIN FORM ON LANDING PAGE (lastly) -->
+                <div id="landingLoginSection" class="login-card">
+                    <h3>Access your account</h3>
+                    <div id="landingLoginPanel">
+                        <form id="landingLoginForm">
+                            <div class="form-group">
+                                <label>Email</label>
+                                <input type="email" id="landingLoginEmail" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Password</label>
+                                <input type="password" id="landingLoginPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-full">Log in</button>
+                            <p id="landingLoginMsg" style="margin-top:12px; font-size:13px; text-align:center;"></p>
+                            <p style="text-align:center; margin-top:16px; font-size:13px;">New here? <a
+                                    data-page="account"
+                                    style="cursor:pointer; color:#c7a17a; text-decoration:underline;">Create account</a>
+                            </p>
+                        </form>
+                    </div>
+                    <div id="landingLoggedInPanel" style="display:none; text-align:center;">
+                        <p>Welcome back, <strong id="landingUserName"></strong>!</p>
+                        <button id="landingLogoutBtn" class="btn-outline btn" style="margin-top:12px;">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHOP PAGE (full product grid + filters) -->
+        <div id="page-shop" class="page">
+            <div class="container">
+                <h2 style="margin: 32px 0 8px">The Collections</h2>
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label>Max price: $<span id="priceValue">500,000.00</span></label>
+                            <input type="range" id="priceFilter" min="0" max="500000" value="500000" step="100">
+                        </div>
+                        <div class="radio-group">
+                            <label><input type="radio" name="type" value="Knife" class="type-filter"> Knife</label>
+                            <label><input type="radio" name="type" value="Handguns" class="type-filter"> Handguns</label>
+                            <label><input type="radio" name="type" value="Rifles" class="type-filter"> Rifles</label>
+                            <label><input type="radio" name="type" value="Shotguns" class="type-filter"> Shotguns</label>
+                            <label><input type="radio" name="type" value="Automatic Weapons" class="type-filter"> Automatic Weapons</label>
+                        </div>
+                        <div class="radio-group">
+                            <label>Sort:</label>
+                            <label><input type="radio" name="sort" value="low"> Price ↑</label>
+                            <label><input type="radio" name="sort" value="high"> Price ↓</label>
+                            <label><input type="radio" name="sort" value="" checked> Default</label>
+                        </div>
+                    </div>
+                </div>
+                <div id="shopProductGrid" class="product-grid"></div>
+            </div>
+        </div>
+
+        <!-- CART PAGE -->
+        <div id="page-cart" class="page">
+            <div class="container">
+                <h2 style="margin: 32px 0 16px">Your Cart</h2>
+                <div id="cartContainer"></div>
+            </div>
+        </div>
+
+        <!-- ACCOUNT PAGE (full signup with extra fields) -->
+        <div id="page-account" class="page">
+            <div class="form-card">
+                <div style="display:flex; gap:16px; margin-bottom:24px; border-bottom:1px solid #eee">
+                    <button id="showLoginBtn" class="btn" style="flex:1; background:#1e1e2a;">Login</button>
+                    <button id="showSignupBtn" class="btn"
+                        style="flex:1; background:transparent; border:1px solid #000000;">Sign Up</button>
+                </div>
+                <div id="loginPanel">
+                    <form id="loginForm">
+                        <div class="form-group"><label>Email</label><input type="email" id="loginEmail" required></div>
+                        <div class="form-group"><label>Password</label><input type="password" id="loginPassword"
+                                required></div>
+                        <button type="submit" class="btn btn-full">Log in</button>
+                        <p id="loginMsg" style="margin-top:12px;"></p>
+                    </form>
+                </div>
+                <div id="signupPanel" style="display:none;">
+                    <form id="signupForm">
+                        <div class="form-group"><label>Full name *</label><input type="text" id="signupName" required>
+                        </div>
+                        <div class="form-group"><label>Email *</label><input type="email" id="signupEmail" required>
+                        </div>
+                        <div class="form-group"><label>Password *</label><input type="password" id="signupPassword"
+                                required></div>
+                        <div class="form-group"><label>Date of Birth</label><input type="date" id="signupDob"></div>
+                        <div class="form-group"><label>NID Number</label><input type="text" id="signupNid"
+                                placeholder="National ID"></div>
+                        <div class="form-group"><label>License attachment</label><input type="file" id="signupLicense"
+                                accept="image/*,application/pdf"></div>
+                        <div class="form-group"><label>Comment / Bio</label><textarea id="signupComment" rows="3"
+                                placeholder="Tell us about your style..."></textarea></div>
+                        <button type="submit" class="btn btn-full">Create account</button>
+                        <p id="signupMsg" style="margin-top:12px;"></p>
+                    </form>
+                </div>
+                <div id="logoutPanel" style="display:none; text-align:center; margin-top:20px;">
+                    <p>Logged in as <strong id="currentUserEmail"></strong></p>
+                    <button id="logoutBtn" class="btn-outline btn">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHECKOUT (Payment Gateway) -->
+        <div id="page-checkout" class="page">
+            <div class="form-card">
+                <h3>Secure payment</h3>
+                <div id="paymentSummary"></div>
+                <form id="paymentForm">
+                    <div class="form-group"><label>Cardholder name</label><input type="text" id="cardName" required>
+                    </div>
+                    <div class="form-group"><label>Card number</label><input type="text" id="cardNumber"
+                            placeholder="4242 4242 4242 4242" maxlength="19" required></div>
+                    <div style="display:flex; gap:16px;">
+                        <div class="form-group" style="flex:1"><label>Expiry (MM/YY)</label><input type="text"
+                                id="cardExpiry" placeholder="12/28" required></div>
+                        <div class="form-group" style="flex:1"><label>CVC</label><input type="password" id="cardCvc"
+                                maxlength="3" required></div>
+                    </div>
+                    <button type="submit" class="btn btn-full" style="background:#2c2c34">Pay now</button>
+                    <div id="paymentMsg" style="margin-top:16px; text-align:center"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">© 2026 mediocore — quiet luxury, timeless silhouettes. Free shipping worldwide | 24/7
+            support</div>
+    </footer>
+
+    <script>
+        // ---------- PRODUCTS (11 items) ----------
+        const products = [
+            { id: 1, name: "Classic White Shirt", price: 50, type: "Knife", image: "https://images.unsplash.com/photo-1521334884684-d80222895322?w=400&auto=format" },
+            { id: 2, name: "Black Slim Pants", price: 120, type: "Handguns", image: "https://images.unsplash.com/photo-1516826957135-700dedea698c?w=400&auto=format" },
+            { id: 3, name: "Elegant Beige Shirt", price: 80, type: "Rifles", image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&auto=format" },
+            { id: 4, name: "Formal Navy Pants", price: 150, type: "Shotguns", image: "https://images.unsplash.com/photo-1593032465171-8b1c3c0b0d2e?w=400&auto=format" },
+            { id: 5, name: "Luxury Black Shirt", price: 90, type: "Automatic Weapons", image: "https://images.unsplash.com/photo-1520975922203-b7d3a5e0c3d4?w=400&auto=format" },
+            { id: 6, name: "Grey Casual Pants", price: 110, type: "Handguns", image: "https://images.unsplash.com/photo-1528701800489-20be3c1c89df?w=400&auto=format" },
+            { id: 7, name: "Minimal White Tee", price: 40, type: "Rifles", image: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=400&auto=format" },
+            { id: 8, name: "Premium Denim", price: 170, type: "Knife", image: "https://images.unsplash.com/photo-1514996937319-344454492b37?w=400&auto=format" },
+            { id: 9, name: "Formal Cream Shirt", price: 75, type: "Handguns", image: "https://images.unsplash.com/photo-1520975682031-a7c2a6f1b7d8?w=400&auto=format" },
+            { id: 10, name: "Luxury Trousers", price: 200, type: "Automatic Weapons", image: "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=400&auto=format" },
+            { id: 11, name: "Urban Fit Shirt", price: 65, type: "Shotguns", image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=400&auto=format" }
+        ];
+
+        // ---------- STATE ----------
+        let cart = [];
+        let currentUser = null;
+
+        // ---------- CART HELPERS ----------
+        function saveCart() {
+            localStorage.setItem("mediocore_cart", JSON.stringify(cart));
+            updateCartBadge();
+            renderCurrentCartIfNeeded();
+            renderPaymentSummaryIfNeeded();
+        }
+        function loadCart() { const stored = localStorage.getItem("mediocore_cart"); cart = stored ? JSON.parse(stored) : []; updateCartBadge(); }
+        function updateCartBadge() { const total = cart.reduce((sum, i) => sum + i.qty, 0); const badge = document.getElementById("cartCountNav"); if (badge) badge.innerText = total; }
+        function addToCart(productId) { const existing = cart.find(i => i.id === productId); if (existing) existing.qty += 1; else cart.push({ id: productId, qty: 1 }); saveCart(); showToast("✓ Added to cart"); }
+        function updateQty(productId, newQty) { if (newQty <= 0) cart = cart.filter(i => i.id !== productId); else { const item = cart.find(i => i.id === productId); if (item) item.qty = newQty; } saveCart(); }
+        function removeItem(productId) { cart = cart.filter(i => i.id !== productId); saveCart(); }
+        function getCartItemsWithDetails() { return cart.map(item => { const prod = products.find(p => p.id === item.id); return { ...item, name: prod.name, price: prod.price, image: prod.image }; }); }
+        function getCartTotal() { return cart.reduce((sum, item) => { const prod = products.find(p => p.id === item.id); return sum + (prod.price * item.qty); }, 0); }
+
+        // ---------- RENDER FUNCTIONS ----------
+        function renderLandingFeatured() {
+            const container = document.getElementById("landingFeaturedGrid");
+            if (!container) return;
+            const featured = products.slice(0, 4);
+            container.innerHTML = featured.map(p => `
+            <div class="product-card">
+                <div class="img-box"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
+                <div class="product-info">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">$${p.price}</div>
+                    <button class="add-to-cart" data-id="${p.id}">Add to cart</button>
+                </div>
+            </div>
+        `).join("");
+            document.querySelectorAll("#landingFeaturedGrid .add-to-cart").forEach(btn => {
+                btn.addEventListener("click", (e) => addToCart(parseInt(btn.dataset.id)));
+            });
+        }
+
+        function renderShopGrid() {
+            const container = document.getElementById("shopProductGrid");
+            if (!container) return;
+            let filtered = [...products];
+            const maxPrice = parseInt(document.getElementById("priceFilter")?.value || 500);
+            const priceSpan = document.getElementById("priceValue");
+            if (priceSpan) priceSpan.innerText = maxPrice;
+            filtered = filtered.filter(p => p.price <= maxPrice);
+            const checkedTypes = Array.from(document.querySelectorAll(".type-filter:checked")).map(cb => cb.value);
+            if (checkedTypes.length) filtered = filtered.filter(p => checkedTypes.includes(p.type));
+            const sortValue = document.querySelector("input[name='sort']:checked")?.value;
+            if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
+            if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
+            container.innerHTML = filtered.map(p => `
+            <div class="product-card">
+                <div class="img-box"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
+                <div class="product-info">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">$${p.price}</div>
+                    <button class="add-to-cart" data-id="${p.id}">Add to cart</button>
+                </div>
+            </div>
+        `).join("");
+            document.querySelectorAll("#shopProductGrid .add-to-cart").forEach(btn => {
+                btn.addEventListener("click", (e) => addToCart(parseInt(btn.dataset.id)));
+            });
+        }
+
+        function renderCartPage() {
+            const container = document.getElementById("cartContainer");
+            if (!container) return;
+            const items = getCartItemsWithDetails();
+            if (items.length === 0) {
+                container.innerHTML = `<div class="alert">Your cart is empty. <a data-nav-shop style="cursor:pointer; text-decoration:underline;">Shop now</a></div>`;
+                container.querySelectorAll("[data-nav-shop]").forEach(el => el.addEventListener("click", () => showPage("shop")));
+                return;
+            }
+            let html = `<div style="overflow-x:auto;"><table class="cart-table"><thead><tr><th>Product</th><th>Price</th><th>Qty</th><th>Total</th><th></th></tr></thead><tbody>`;
+            items.forEach(item => {
+                const total = item.price * item.qty;
+                html += `<tr>
+                        <td style="display:flex; gap:12px; align-items:center;"><img src="${item.image}" width="50" height="60" style="object-fit:cover; border-radius:12px;"> ${item.name}</td>
+                        <td>$${item.price}</td>
+                        <td><input type="number" class="qty-input" data-id="${item.id}" value="${item.qty}" min="1" step="1"></td>
+                        <td>$${total}</td>
+                        <td><button class="remove-item" data-id="${item.id}">✕</button></td>
+                      </tr>`;
+            });
+            html += `</tbody></table></div><div class="cart-summary"><p>Subtotal: <strong>$${getCartTotal()}</strong></p><button id="proceedToCheckoutBtn" class="btn">Proceed to checkout</button></div>`;
+            container.innerHTML = html;
+            document.querySelectorAll(".qty-input").forEach(inp => inp.addEventListener("change", (e) => updateQty(parseInt(inp.dataset.id), parseInt(inp.value))));
+            document.querySelectorAll(".remove-item").forEach(btn => btn.addEventListener("click", (e) => removeItem(parseInt(btn.dataset.id))));
+            const proceedBtn = document.getElementById("proceedToCheckoutBtn");
+            if (proceedBtn) proceedBtn.addEventListener("click", () => {
+                if (!currentUser) { alert("Please log in before checkout."); showPage("account"); return; }
+                if (cart.length === 0) { alert("Cart empty."); return; }
+                showPage("checkout");
+                renderPaymentSummaryIfNeeded();
+            });
+        }
+
+        function renderPaymentSummaryIfNeeded() {
+            const summaryDiv = document.getElementById("paymentSummary");
+            if (!summaryDiv) return;
+            const items = getCartItemsWithDetails();
+            if (items.length === 0) { summaryDiv.innerHTML = `<div class="alert">No items in cart.</div>`; return; }
+            let html = `<div style="margin-bottom:20px;"><strong>Order summary</strong></div>`;
+            items.forEach(it => { html += `<div style="display:flex; justify-content:space-between; margin:8px 0;"><span>${it.name} (x${it.qty})</span><span>$${it.price * it.qty}</span></div>`; });
+            html += `<div style="font-weight:800; font-size:20px; margin-top:12px;">Total: $${getCartTotal()}</div>`;
+            summaryDiv.innerHTML = html;
+        }
+
+        function renderCurrentCartIfNeeded() {
+            if (document.getElementById("page-cart").classList.contains("active-page")) renderCartPage();
+            if (document.getElementById("page-checkout").classList.contains("active-page")) renderPaymentSummaryIfNeeded();
+        }
+
+        // ---------- AUTHENTICATION (shared) ----------
+        function updateLandingLoginUI() {
+            const panel = document.getElementById("landingLoginPanel");
+            const loggedPanel = document.getElementById("landingLoggedInPanel");
+            const userNameSpan = document.getElementById("landingUserName");
+            if (currentUser) {
+                if (panel) panel.style.display = "none";
+                if (loggedPanel) { loggedPanel.style.display = "block"; userNameSpan.innerText = currentUser.name || currentUser.email.split('@')[0]; }
+            } else {
+                if (panel) panel.style.display = "block";
+                if (loggedPanel) loggedPanel.style.display = "none";
+            }
+        }
+
+        function loginUser(email, pass, source = "account") {
+            const users = JSON.parse(localStorage.getItem("mediocore_users") || "[]");
+            const user = users.find(u => u.email === email && u.password === pass);
+            if (user) {
+                currentUser = { email: user.email, name: user.name };
+                sessionStorage.setItem("mediocore_user", JSON.stringify(currentUser));
+                updateAccountUI();
+                updateLandingLoginUI();
+                if (source === "landing") {
+                    document.getElementById("landingLoginMsg").innerHTML = "<span style='color:#2e7d64'>Login success! Welcome.</span>";
+                    setTimeout(() => { document.getElementById("landingLoginMsg").innerHTML = ""; }, 2000);
+                } else {
+                    document.getElementById("loginMsg").innerHTML = "<span style='color:#2e7d64'>Login success!</span>";
+                    setTimeout(() => showPage("landing"), 800);
+                }
+                return true;
+            } else {
+                if (source === "landing") document.getElementById("landingLoginMsg").innerText = "Invalid credentials.";
+                else document.getElementById("loginMsg").innerText = "Invalid credentials.";
+                return false;
+            }
+        }
+
+        function signupUser(name, email, pass, dob, nid, comment, fileInput) {
+            let users = JSON.parse(localStorage.getItem("mediocore_users") || "[]");
+            if (users.find(u => u.email === email)) { document.getElementById("signupMsg").innerText = "Email exists. Login instead."; return; }
+            let licenseFileName = "";
+            if (fileInput && fileInput.files.length > 0) licenseFileName = fileInput.files[0].name;
+            const newUser = { name, email, password: pass, dob, nid, comment, licenseFile: licenseFileName };
+            users.push(newUser);
+            localStorage.setItem("mediocore_users", JSON.stringify(users));
+            currentUser = { email, name };
+            sessionStorage.setItem("mediocore_user", JSON.stringify(currentUser));
+            updateAccountUI();
+            updateLandingLoginUI();
+            document.getElementById("signupMsg").innerHTML = "<span style='color:#2e7d64'>Account created!</span>";
+            setTimeout(() => showPage("landing"), 800);
+        }
+
+        function logout() {
+            currentUser = null;
+            sessionStorage.removeItem("mediocore_user");
+            updateAccountUI();
+            updateLandingLoginUI();
+            showPage("landing");
+        }
+
+        function updateAccountUI() {
+            const loginPanel = document.getElementById("loginPanel");
+            const signupPanel = document.getElementById("signupPanel");
+            const logoutPanel = document.getElementById("logoutPanel");
+            if (currentUser) {
+                if (loginPanel) loginPanel.style.display = "none";
+                if (signupPanel) signupPanel.style.display = "none";
+                if (logoutPanel) logoutPanel.style.display = "block";
+                const emailSpan = document.getElementById("currentUserEmail");
+                if (emailSpan) emailSpan.innerText = currentUser.email;
+            } else {
+                if (loginPanel) loginPanel.style.display = "block";
+                if (signupPanel) signupPanel.style.display = "none";
+                if (logoutPanel) logoutPanel.style.display = "none";
+            }
+        }
+
+        function initAuth() {
+            const stored = sessionStorage.getItem("mediocore_user");
+            if (stored) { try { currentUser = JSON.parse(stored); } catch (e) { currentUser = null; } }
+            updateAccountUI();
+            updateLandingLoginUI();
+        }
+
+        // ---------- PAYMENT GATEWAY ----------
+        function handlePayment(e) {
+            e.preventDefault();
+            if (!currentUser) { document.getElementById("paymentMsg").innerHTML = "<span style='color:#b15e5e'>Login required.</span>"; showPage("account"); return; }
+            if (cart.length === 0) { document.getElementById("paymentMsg").innerHTML = "<span style='color:#b15e5e'>Cart empty.</span>"; return; }
+            const cardNum = document.getElementById("cardNumber").value.replace(/\s/g, "");
+            const expiry = document.getElementById("cardExpiry").value;
+            const cvc = document.getElementById("cardCvc").value;
+            if (!cardNum || cardNum.length < 13 || !expiry.match(/^\d{2}\/\d{2}$/) || !cvc) {
+                document.getElementById("paymentMsg").innerHTML = "<span style='color:#b15e5e'>Invalid card (demo: 4242424242424242, 12/28, 123)</span>";
+                return;
+            }
+            document.getElementById("paymentMsg").innerHTML = "<span style='color:#2e7d64'>✓ Payment successful! Order placed.</span>";
+            cart = [];
+            saveCart();
+            renderCartPage();
+            renderPaymentSummaryIfNeeded();
+            setTimeout(() => { alert("Thank you! Your order is confirmed."); showPage("landing"); }, 1500);
+        }
+
+        // ---------- NAVIGATION ----------
+        function showPage(pageId) {
+            document.querySelectorAll(".page").forEach(p => p.classList.remove("active-page"));
+            const target = document.getElementById(`page-${pageId}`);
+            if (target) target.classList.add("active-page");
+            document.querySelectorAll(".nav-links a").forEach(link => {
+                if (link.dataset.page === pageId) link.classList.add("active");
+                else link.classList.remove("active");
+            });
+            if (pageId === "shop") renderShopGrid();
+            if (pageId === "cart") renderCartPage();
+            if (pageId === "checkout") { if (!currentUser) { alert("Please log in first."); showPage("account"); return; } renderPaymentSummaryIfNeeded(); }
+            if (pageId === "account") updateAccountUI();
+            if (pageId === "landing") { renderLandingFeatured(); updateLandingLoginUI(); }
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement("div");
+            toast.innerText = msg;
+            toast.style.position = "fixed";
+            toast.style.bottom = "20px";
+            toast.style.right = "20px";
+            toast.style.background = "#1e1e2a";
+            toast.style.color = "white";
+            toast.style.padding = "10px 20px";
+            toast.style.borderRadius = "40px";
+            toast.style.zIndex = "999";
+            toast.style.fontSize = "13px";
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 1300);
+        }
+
+        // ---------- EVENT BINDINGS ----------
+        function bindEvents() {
+            document.querySelectorAll(".nav-links a").forEach(link => {
+                link.addEventListener("click", () => { const page = link.dataset.page; if (page) showPage(page); });
+            });
+            document.querySelectorAll("[data-nav-shop], .logo[data-nav-landing]").forEach(el => {
+                if (el.classList.contains("logo")) el.addEventListener("click", () => showPage("landing"));
+                else el.addEventListener("click", () => showPage("shop"));
+            });
+            document.getElementById("priceFilter")?.addEventListener("input", () => renderShopGrid());
+            document.querySelectorAll(".type-filter").forEach(cb => cb.addEventListener("change", () => renderShopGrid()));
+            document.querySelectorAll("input[name='sort']").forEach(radio => radio.addEventListener("change", () => renderShopGrid()));
+
+            // Account page forms
+            document.getElementById("loginForm")?.addEventListener("submit", (e) => { e.preventDefault(); loginUser(document.getElementById("loginEmail").value, document.getElementById("loginPassword").value, "account"); });
+            document.getElementById("signupForm")?.addEventListener("submit", (e) => { e.preventDefault(); signupUser(document.getElementById("signupName").value, document.getElementById("signupEmail").value, document.getElementById("signupPassword").value, document.getElementById("signupDob").value, document.getElementById("signupNid").value, document.getElementById("signupComment").value, document.getElementById("signupLicense")); });
+            document.getElementById("showLoginBtn")?.addEventListener("click", () => { document.getElementById("loginPanel").style.display = "block"; document.getElementById("signupPanel").style.display = "none"; });
+            document.getElementById("showSignupBtn")?.addEventListener("click", () => { document.getElementById("loginPanel").style.display = "none"; document.getElementById("signupPanel").style.display = "block"; });
+            document.getElementById("logoutBtn")?.addEventListener("click", () => logout());
+            document.getElementById("paymentForm")?.addEventListener("submit", handlePayment);
+
+            // Landing page login form
+            const landingLoginForm = document.getElementById("landingLoginForm");
+            if (landingLoginForm) {
+                landingLoginForm.addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById("landingLoginEmail").value;
+                    const pass = document.getElementById("landingLoginPassword").value;
+                    loginUser(email, pass, "landing");
+                });
+            }
+            const landingLogoutBtn = document.getElementById("landingLogoutBtn");
+            if (landingLogoutBtn) landingLogoutBtn.addEventListener("click", () => logout());
+
+            // Link from landing login card to account page
+            const createAccountLink = document.querySelector("#landingLoginSection a[data-page='account']");
+            if (createAccountLink) createAccountLink.addEventListener("click", () => showPage("account"));
+        }
+
+        // ---------- INIT ----------
+        function init() {
+            loadCart();
+            initAuth();
+            bindEvents();
+            renderShopGrid();
+            renderLandingFeatured();
+            showPage("landing");
+        }
+        init();
+    </script>
+</body>
+
+ </html>
