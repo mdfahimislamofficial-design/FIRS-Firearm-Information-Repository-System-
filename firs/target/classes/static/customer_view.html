@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRS — Customer Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg0:#07070A;--bg1:#0E0E14;--bg2:#16161F;--bg3:#1E1E2B;--card:#1A1A25;--red:#C8213A;--red-b:#E8354D;--red-glow:rgba(200,33,58,0.25);--ash:#A2A2B8;--ash2:#5A5A72;--ash3:#2A2A3A;--white:#F4F4FA;--border:rgba(255,255,255,0.07);--border-r:rgba(200,33,58,0.35);--green-b:#22A05A;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg0);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;background:rgba(7,7,10,0.97);border-bottom:1px solid var(--border);padding:0 32px;gap:24px;}
+  .logo{font-family:'Bebas Neue';font-size:24px;letter-spacing:4px;color:var(--white);text-decoration:none;flex-shrink:0;}
+  .logo span{color:var(--red);}
+  .nav-search{flex:1;max-width:440px;position:relative;}
+  .nav-search input{width:100%;padding:9px 40px 9px 16px;background:var(--bg2);border:1px solid var(--border);color:var(--white);font-size:13px;font-family:'DM Sans';outline:none;transition:border .2s;}
+  .nav-search input:focus{border-color:var(--red);}
+  .nav-search input::placeholder{color:var(--ash2);}
+  .nav-search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ash2);pointer-events:none;}
+  nav ul{display:flex;gap:28px;list-style:none;margin-left:24px;}
+  nav ul a{font-family:'Rajdhani';font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash);text-decoration:none;transition:color .2s;}
+  nav ul a:hover,nav ul a.active{color:var(--white);}
+  .nav-end{display:flex;align-items:center;gap:16px;margin-left:auto;}
+  .nav-cart{position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:border .2s;font-size:16px;}
+  .nav-cart:hover{border-color:var(--red);}
+  .cart-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--red);border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-weight:700;}
+  .nav-user{display:flex;align-items:center;gap:10px;padding:6px 14px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;}
+  .nav-user-avatar{width:28px;height:28px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+  .nav-user-name{font-family:'Rajdhani';font-size:13px;letter-spacing:.5px;color:var(--white);}
+  .nav-tier{font-family:'Rajdhani';font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;background:rgba(34,160,90,0.12);border:1px solid rgba(34,160,90,0.25);color:var(--green-b);}
+
+  /* SUBNAV */
+  .subnav{background:var(--bg1);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;gap:0;overflow-x:auto;}
+  .subnav a{font-family:'Rajdhani';font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash2);text-decoration:none;padding:14px 20px;border-bottom:2px solid transparent;flex-shrink:0;transition:all .2s;}
+  .subnav a:hover{color:var(--white);}
+  .subnav a.active{color:var(--red);border-bottom-color:var(--red);}
+  .subnav-sep{width:1px;height:16px;background:var(--border);margin:0 8px;flex-shrink:0;}
+  .subnav-lock{color:var(--ash3) !important;cursor:not-allowed !important;position:relative;}
+  .subnav-lock::after{content:'🔒';font-size:9px;margin-left:4px;}
+
+  /* HERO BANNER */
+  .hero-banner{
+    background:linear-gradient(135deg,var(--bg1) 0%,#100810 100%);
+    border-bottom:1px solid var(--border);padding:40px 32px;
+    position:relative;overflow:hidden;
+  }
+  .hero-banner-bg{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:40px 40px;opacity:.06;}
+  .hero-banner-glow{position:absolute;right:-60px;top:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,33,58,0.1) 0%,transparent 70%);}
+  .hero-banner-content{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;}
+  .hero-banner-text .eyebrow{font-family:'Rajdhani';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .hero-banner-text .eyebrow::before{content:'';width:20px;height:1px;background:var(--red);}
+  .hero-banner-title{font-family:'Bebas Neue';font-size:48px;letter-spacing:2px;line-height:1;margin-bottom:8px;}
+  .hero-banner-sub{font-size:14px;color:var(--ash);font-weight:300;}
+  .hero-banner-stats{display:flex;gap:32px;}
+  .hstat{text-align:right;}
+  .hstat-num{font-family:'Bebas Neue';font-size:32px;color:var(--white);}
+  .hstat-label{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ash2);}
+
+  /* MAIN LAYOUT */
+  .main-wrap{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 130px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--bg1);border-right:1px solid var(--border);padding:28px 0;}
+  .sidebar-section{margin-bottom:28px;}
+  .sidebar-title{font-family:'Rajdhani';font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ash2);padding:0 24px;margin-bottom:12px;}
+  .sidebar-item{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;cursor:pointer;transition:background .15s;text-decoration:none;color:var(--ash);}
+  .sidebar-item:hover{background:var(--bg2);}
+  .sidebar-item.active{background:rgba(200,33,58,0.1);color:var(--white);border-left:2px solid var(--red);}
+  .sidebar-item-left{display:flex;align-items:center;gap:10px;font-family:'Rajdhani';font-size:13px;letter-spacing:.5px;}
+  .sidebar-item-count{font-family:'Rajdhani';font-size:11px;color:var(--ash2);}
+  .sidebar-divider{height:1px;background:var(--border);margin:8px 0;}
+  .filter-group{padding:0 24px;margin-bottom:16px;}
+  .filter-label{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ash2);margin-bottom:10px;}
+  .filter-option{display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer;}
+  .filter-option input[type="checkbox"]{accent-color:var(--red);}
+  .filter-option span{font-size:13px;color:var(--ash);}
+  .filter-option small{font-family:'Rajdhani';font-size:11px;color:var(--ash2);margin-left:auto;}
+  .price-range{padding:0 24px;margin-bottom:16px;}
+  .range-inputs{display:flex;gap:8px;margin-top:8px;}
+  .range-inputs input{flex:1;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--white);font-size:12px;font-family:'DM Sans';outline:none;}
+  .range-inputs input:focus{border-color:var(--red);}
+  .range-slider{width:100%;height:3px;background:var(--ash3);outline:none;-webkit-appearance:none;margin-top:12px;}
+  .range-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;background:var(--red);cursor:pointer;}
+
+  /* CONTENT */
+  .content{padding:28px 32px;}
+  .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+  .content-title-row{display:flex;align-items:center;gap:16px;}
+  .content-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:2px;}
+  .content-count{font-family:'Rajdhani';font-size:13px;color:var(--ash2);padding:3px 12px;background:var(--bg2);border:1px solid var(--border);}
+  .sort-row{display:flex;align-items:center;gap:12px;}
+  .sort-select{padding:8px 14px;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-family:'Rajdhani';font-size:12px;letter-spacing:1px;outline:none;cursor:pointer;}
+  .view-toggle{display:flex;border:1px solid var(--border);}
+  .view-btn{padding:8px 12px;background:none;border:none;color:var(--ash2);cursor:pointer;font-size:14px;transition:all .2s;}
+  .view-btn.active{background:var(--bg2);color:var(--white);}
+
+  /* FILTER CHIPS */
+  .filter-chips{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;}
+  .chip{display:flex;align-items:center;gap:6px;padding:5px 12px;background:rgba(200,33,58,0.1);border:1px solid var(--border-r);font-family:'Rajdhani';font-size:11px;letter-spacing:1px;color:var(--red-b);cursor:pointer;}
+  .chip:hover{background:rgba(200,33,58,0.18);}
+  .chip-clear{font-size:14px;color:var(--ash2);}
+
+  /* PRODUCTS GRID */
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+  .prod-card{background:var(--card);border:1px solid var(--border);overflow:hidden;transition:all .25s;cursor:pointer;position:relative;}
+  .prod-card:hover{border-color:var(--border-r);transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,0.35);}
+  .prod-img{width:100%;height:180px;background:var(--bg2);display:flex;align-items:center;justify-content:center;position:relative;}
+  .prod-img-inner{font-size:52px;filter:drop-shadow(0 0 20px rgba(200,33,58,0.2));}
+  .prod-wishlist{position:absolute;top:10px;right:10px;width:30px;height:30px;background:rgba(0,0,0,0.6);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ash2);transition:all .2s;}
+  .prod-wishlist:hover,.prod-wishlist.active{color:#E84A4A;border-color:rgba(232,74,74,0.4);}
+  .prod-badge{position:absolute;top:10px;left:10px;font-family:'Rajdhani';font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;}
+  .badge-new{background:var(--red);color:white;}
+  .badge-sale{background:rgba(34,160,90,0.8);color:white;}
+  .badge-hot{background:rgba(200,100,33,0.8);color:white;}
+  .prod-body{padding:16px;}
+  .prod-category{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--red);margin-bottom:4px;}
+  .prod-name{font-family:'Rajdhani';font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;line-height:1.2;}
+  .prod-spec{font-size:11px;color:var(--ash2);margin-bottom:12px;line-height:1.4;}
+  .prod-foot{display:flex;justify-content:space-between;align-items:center;}
+  .prod-price{font-family:'Bebas Neue';font-size:22px;color:var(--white);letter-spacing:1px;}
+  .prod-price-old{font-size:12px;color:var(--ash2);text-decoration:line-through;margin-right:6px;font-family:'DM Sans';}
+  .prod-actions{display:flex;gap:6px;}
+  .btn-cart{padding:7px 14px;background:var(--red);border:none;color:white;font-family:'Rajdhani';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+  .btn-cart:hover{background:var(--red-b);}
+  .btn-view{padding:7px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-size:12px;cursor:pointer;transition:all .2s;}
+  .btn-view:hover{border-color:var(--ash2);color:var(--white);}
+  .prod-rating{display:flex;align-items:center;gap:4px;margin-bottom:8px;}
+  .stars{color:var(--red);font-size:11px;}
+  .rating-count{font-size:11px;color:var(--ash2);}
+
+  /* PAGINATION */
+  .pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:40px;}
+  .page-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-family:'Rajdhani';font-size:13px;cursor:pointer;transition:all .2s;}
+  .page-btn.active{background:var(--red);border-color:var(--red);color:white;}
+  .page-btn:hover:not(.active){border-color:var(--ash2);color:var(--white);}
+  .page-ellipsis{color:var(--ash2);font-family:'Rajdhani';}
+
+  /* RESTRICTED BANNER */
+  .restricted-banner{background:rgba(200,33,58,0.06);border:1px solid var(--border-r);padding:16px 24px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+  .restricted-text{display:flex;align-items:center;gap:12px;font-size:13px;color:var(--ash);}
+  .restricted-text::before{content:'🔒';font-size:16px;}
+  .btn-upgrade{padding:7px 18px;background:transparent;border:1px solid var(--red);color:var(--red);font-family:'Rajdhani';font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s;text-decoration:none;}
+  .btn-upgrade:hover{background:var(--red);color:white;}
+
+  /* CART DRAWER */
+  .cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:200;display:none;}
+  .cart-drawer{position:fixed;right:0;top:0;bottom:0;width:400px;background:var(--bg1);border-left:1px solid var(--border);z-index:201;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s ease;}
+  .cart-drawer.open{transform:translateX(0);}
+  .cart-overlay.open{display:block;}
+  .cart-header{padding:24px 28px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .cart-header-title{font-family:'Bebas Neue';font-size:24px;letter-spacing:2px;}
+  .cart-close{width:32px;height:32px;background:var(--bg2);border:1px solid var(--border);color:var(--ash2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .cart-body{flex:1;overflow-y:auto;padding:20px 28px;}
+  .cart-item{display:flex;gap:16px;padding:16px 0;border-bottom:1px solid var(--border);}
+  .cart-item-img{width:64px;height:60px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+  .cart-item-name{font-family:'Rajdhani';font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;}
+  .cart-item-spec{font-size:11px;color:var(--ash2);}
+  .cart-item-price{font-family:'Bebas Neue';font-size:20px;color:var(--red);margin-top:6px;}
+  .cart-item-remove{margin-left:auto;color:var(--ash2);cursor:pointer;font-size:18px;align-self:flex-start;transition:color .2s;}
+  .cart-item-remove:hover{color:var(--red);}
+  .cart-footer{padding:20px 28px;border-top:1px solid var(--border);}
+  .cart-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-size:13px;color:var(--ash);}
+  .cart-row.total{font-family:'Rajdhani';font-size:16px;font-weight:700;color:var(--white);border-top:1px solid var(--border);padding-top:12px;margin-top:4px;}
+  .btn-checkout{width:100%;padding:14px;background:var(--red);border:none;color:white;font-family:'Rajdhani';font-weight:700;font-size:14px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .25s;margin-top:16px;}
+  .btn-checkout:hover{background:var(--red-b);}
+  .ffl-notice{background:rgba(200,33,58,0.08);border:1px solid var(--border-r);padding:10px 14px;font-size:12px;color:var(--ash);margin-bottom:16px;display:flex;gap:8px;}
+  .ffl-notice::before{content:'ℹ';color:var(--red);flex-shrink:0;}
+
+  @media(max-width:768px){
+    nav ul{display:none;}
+    .main-wrap{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .hero-banner-stats{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">F<span>I</span>RS</a>
+  <div class="nav-search">
+    <input type="text" placeholder="Search handguns, revolvers, accessories...">
+    <span class="nav-search-icon">🔍</span>
+  </div>
+  <ul>
+    <li><a href="#" class="active">Shop</a></li>
+    <li><a href="#">Orders</a></li>
+    <li><a href="#">Wishlist</a></li>
+    <li><a href="#">FFL Finder</a></li>
+  </ul>
+  <div class="nav-end">
+    <div class="nav-tier">Customer</div>
+    <div class="nav-cart" onclick="toggleCart()">🛒<div class="cart-badge">2</div></div>
+    <div class="nav-user">
+      <div class="nav-user-avatar">J</div>
+      <div class="nav-user-name">Jason M.</div>
+    </div>
+  </div>
+</nav>
+
+<!-- SUBNAV -->
+<div class="subnav">
+  <a href="#" class="active">Handguns</a>
+  <a href="#">Revolvers</a>
+  <div class="subnav-sep"></div>
+  <a href="#" class="subnav-lock">Rifles</a>
+  <a href="#" class="subnav-lock">Shotguns</a>
+  <a href="#" class="subnav-lock">Snipers</a>
+  <div class="subnav-sep"></div>
+  <a href="#">Parts & Accessories</a>
+  <a href="#">Ammunition</a>
+  <a href="#">Optics</a>
+</div>
+
+<!-- HERO BANNER -->
+<div class="hero-banner">
+  <div class="hero-banner-bg"></div>
+  <div class="hero-banner-glow"></div>
+  <div class="hero-banner-content">
+    <div class="hero-banner-text">
+      <div class="eyebrow">Open Access Category</div>
+      <div class="hero-banner-title">HANDGUNS</div>
+      <div class="hero-banner-sub">Semi-automatic pistols from top manufacturers. All FFL-compliant.</div>
+    </div>
+    <div class="hero-banner-stats">
+      <div class="hstat"><div class="hstat-num">2,847</div><div class="hstat-label">In Catalog</div></div>
+      <div class="hstat"><div class="hstat-num">$299</div><div class="hstat-label">Starting From</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Browse</div>
+      <a href="#" class="sidebar-item active">
+        <div class="sidebar-item-left">🔫 Handguns</div>
+        <div class="sidebar-item-count">2,847</div>
+      </a>
+      <a href="#" class="sidebar-item">
+        <div class="sidebar-item-left">🎯 Revolvers</div>
+        <div class="sidebar-item-count">1,204</div>
+      </a>
+      <a href="#" class="sidebar-item" style="opacity:.4;pointer-events:none;">
+        <div class="sidebar-item-left">🔒 Rifles</div>
+        <div class="sidebar-item-count" style="color:var(--red-b)">Restricted</div>
+      </a>
+      <a href="#" class="sidebar-item" style="opacity:.4;pointer-events:none;">
+        <div class="sidebar-item-left">🔒 Snipers</div>
+        <div class="sidebar-item-count" style="color:var(--red-b)">Restricted</div>
+      </a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Caliber</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>9mm</span><small>1,204</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.40 S&W</span><small>487</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.45 ACP</span><small>312</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.380 ACP</span><small>228</small></div>
+        <div class="filter-option"><input type="checkbox"><span>10mm</span><small>89</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.357 SIG</span><small>67</small></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Brand</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>Glock</span><small>342</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Sig Sauer</span><small>287</small></div>
+        <div class="filter-option"><input type="checkbox"><span>S&W</span><small>264</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Ruger</span><small>198</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Beretta</span><small>156</small></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Price Range</div>
+      <div class="price-range">
+        <div class="range-inputs">
+          <input type="text" placeholder="$299" value="$299">
+          <input type="text" placeholder="$1,200" value="$1,200">
+        </div>
+        <input type="range" class="range-slider" min="0" max="2000" value="1200">
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Condition</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>New</span><small>1,847</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Like New</span><small>612</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Used</span><small>388</small></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+    <!-- RESTRICTED NOTICE -->
+    <div class="restricted-banner">
+      <div class="restricted-text">Rifles, shotguns, and snipers require government or militia verification. Your current tier: Customer.</div>
+      <a href="auth_page.html" class="btn-upgrade">Apply for Upgrade</a>
+    </div>
+
+    <!-- HEADER -->
+    <div class="content-header">
+      <div class="content-title-row">
+        <div class="content-title">HANDGUNS</div>
+        <div class="content-count">2,847 Results</div>
+      </div>
+      <div class="sort-row">
+        <select class="sort-select">
+          <option>Sort: Featured</option>
+          <option>Price: Low to High</option>
+          <option>Price: High to Low</option>
+          <option>Newest First</option>
+          <option>Best Rated</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active">⊞</button>
+          <button class="view-btn">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER CHIPS -->
+    <div class="filter-chips">
+      <div class="chip">9mm <span class="chip-clear">×</span></div>
+      <div class="chip">Glock <span class="chip-clear">×</span></div>
+      <div class="chip">New Condition <span class="chip-clear">×</span></div>
+      <div class="chip" style="background:transparent;border-color:var(--ash3);color:var(--ash2);">Clear All</div>
+    </div>
+
+    <!-- GRID -->
+    <div class="products-grid">
+      <div class="prod-card" onclick="addToCart('Glock 19 Gen5','$649')">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist">♡</div>
+          <div class="prod-badge badge-hot">Best Seller</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · 9mm</div>
+          <div class="prod-name">Glock 19 Gen5</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(847)</span></div>
+          <div class="prod-spec">Capacity: 15+1 · 4.02" barrel · Polymer frame</div>
+          <div class="prod-foot">
+            <div class="prod-price">$649</div>
+            <div class="prod-actions">
+              <button class="btn-view">👁</button>
+              <button class="btn-cart" onclick="event.stopPropagation();addToCart('Glock 19 Gen5','$649')">Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist active">♥</div>
+          <div class="prod-badge badge-new">New</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · 9mm</div>
+          <div class="prod-name">Sig Sauer P320 Compact</div>
+          <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(412)</span></div>
+          <div class="prod-spec">Capacity: 15+1 · 3.9" barrel · Modular</div>
+          <div class="prod-foot">
+            <div class="prod-price">$799</div>
+            <div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist">♡</div>
+          <div class="prod-badge badge-sale">-15%</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · .45 ACP</div>
+          <div class="prod-name">Springfield Armory XD-M</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(223)</span></div>
+          <div class="prod-spec">Capacity: 13+1 · 4.5" barrel · Match grade</div>
+          <div class="prod-foot">
+            <div><span class="prod-price-old">$729</span><span class="prod-price">$619</span></div>
+            <div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🔫</div><div class="prod-wishlist">♡</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · 9mm</div>
+          <div class="prod-name">CZ P-10 C</div>
+          <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(187)</span></div>
+          <div class="prod-spec">Capacity: 15+1 · 4.02" barrel · Nitride finish</div>
+          <div class="prod-foot">
+            <div class="prod-price">$499</div>
+            <div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🔫</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-new">New</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · .40 S&W</div>
+          <div class="prod-name">Smith & Wesson M&P40</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(334)</span></div>
+          <div class="prod-spec">Capacity: 15+1 · 4.25" barrel · Armornite</div>
+          <div class="prod-foot">
+            <div class="prod-price">$549</div>
+            <div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🔫</div><div class="prod-wishlist">♡</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Semi-Auto · 9mm</div>
+          <div class="prod-name">Walther PDP Full Size</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(156)</span></div>
+          <div class="prod-spec">Capacity: 18+1 · 4.5" barrel · Optics ready</div>
+          <div class="prod-foot">
+            <div class="prod-price">$699</div>
+            <div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <button class="page-btn">‹</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <span class="page-ellipsis">...</span>
+      <button class="page-btn">48</button>
+      <button class="page-btn">›</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header">
+    <div class="cart-header-title">YOUR CART</div>
+    <button class="cart-close" onclick="toggleCart()">×</button>
+  </div>
+  <div class="cart-body">
+    <div class="ffl-notice">FFL transfer required. Items ship to your registered FFL dealer only.</div>
+    <div id="cart-items">
+      <div class="cart-item">
+        <div class="cart-item-img">🔫</div>
+        <div>
+          <div class="cart-item-name">Glock 19 Gen5</div>
+          <div class="cart-item-spec">9mm · New · Qty: 1</div>
+          <div class="cart-item-price">$649</div>
+        </div>
+        <div class="cart-item-remove">×</div>
+      </div>
+      <div class="cart-item">
+        <div class="cart-item-img">🎯</div>
+        <div>
+          <div class="cart-item-name">S&W 686+ Revolver</div>
+          <div class="cart-item-spec">.357 Mag · New · Qty: 1</div>
+          <div class="cart-item-price">$829</div>
+        </div>
+        <div class="cart-item-remove">×</div>
+      </div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-row"><span>Subtotal</span><span>$1,478</span></div>
+    <div class="cart-row"><span>FFL Transfer (×2)</span><span>$50</span></div>
+    <div class="cart-row"><span>Shipping</span><span>$0</span></div>
+    <div class="cart-row total"><span>Total</span><span>$1,528</span></div>
+    <a href="payment_page.html"><button class="btn-checkout">Proceed to Checkout →</button></a>
+  </div>
+</div>
+
+<script>
+  function toggleCart() {
+    document.getElementById('cart-drawer').classList.toggle('open');
+    document.getElementById('cart-overlay').classList.toggle('open');
+  }
+  function addToCart(name, price) {
+    const items = document.getElementById('cart-items');
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `<div class="cart-item-img">🔫</div><div><div class="cart-item-name">${name}</div><div class="cart-item-spec">New · Qty: 1</div><div class="cart-item-price">${price}</div></div><div class="cart-item-remove" onclick="this.closest('.cart-item').remove()">×</div>`;
+    items.appendChild(div);
+    toggleCart();
+  }
+  document.querySelectorAll('.prod-wishlist').forEach(w => {
+    w.addEventListener('click', function(e) {
+      e.stopPropagation();
+      this.classList.toggle('active');
+      this.textContent = this.classList.contains('active') ? '♥' : '♡';
+    });
+  });
+</script>
+</body>
+</html>

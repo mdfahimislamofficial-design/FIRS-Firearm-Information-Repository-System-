@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIRS — Government Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--bg0:#07070A;--bg1:#0E0E14;--bg2:#16161F;--bg3:#1E1E2B;--card:#1A1A25;--red:#C8213A;--red-b:#E8354D;--red-glow:rgba(200,33,58,0.25);--ash:#A2A2B8;--ash2:#5A5A72;--ash3:#2A2A3A;--white:#F4F4FA;--border:rgba(255,255,255,0.07);--border-r:rgba(200,33,58,0.35);--green:#1A6B3C;--green-b:#22A05A;--green-glow:rgba(34,160,90,0.2);--gold:#C8A020;--gold-b:#E8C040;}
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg0);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+  /* CLEARANCE BANNER */
+  .clearance-bar{background:linear-gradient(90deg,#0A180D,#0C2010,#0A180D);border-bottom:1px solid rgba(34,160,90,0.3);padding:8px 32px;display:flex;align-items:center;justify-content:space-between;}
+  .clearance-left{display:flex;align-items:center;gap:12px;}
+  .clearance-level{font-family:'Rajdhani';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--green-b);background:rgba(34,160,90,0.1);border:1px solid rgba(34,160,90,0.3);padding:3px 12px;}
+  .clearance-name{font-family:'Rajdhani';font-size:12px;letter-spacing:1px;color:var(--green-b);}
+  .clearance-right{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ash2);}
+  .clearance-dot{width:6px;height:6px;background:var(--green-b);border-radius:50%;display:inline-block;animation:gpulse 2s infinite;margin-right:6px;}
+  @keyframes gpulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;height:64px;display:flex;align-items:center;background:rgba(7,7,10,0.97);border-bottom:1px solid var(--border);padding:0 32px;gap:24px;}
+  .logo{font-family:'Bebas Neue';font-size:24px;letter-spacing:4px;color:var(--white);text-decoration:none;flex-shrink:0;}
+  .logo span{color:var(--red);}
+  .logo-badge{font-family:'Rajdhani';font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;background:rgba(34,160,90,0.12);border:1px solid rgba(34,160,90,0.3);color:var(--green-b);margin-left:10px;}
+  .nav-search{flex:1;max-width:480px;position:relative;}
+  .nav-search input{width:100%;padding:9px 40px 9px 16px;background:var(--bg2);border:1px solid rgba(34,160,90,0.2);color:var(--white);font-size:13px;font-family:'DM Sans';outline:none;transition:border .2s;}
+  .nav-search input:focus{border-color:rgba(34,160,90,0.5);}
+  .nav-search input::placeholder{color:var(--ash2);}
+  .nav-search-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--ash2);}
+  nav ul{display:flex;gap:24px;list-style:none;margin-left:16px;}
+  nav ul a{font-family:'Rajdhani';font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash);text-decoration:none;transition:color .2s;}
+  nav ul a:hover,nav ul a.active{color:var(--white);}
+  .nav-end{display:flex;align-items:center;gap:14px;margin-left:auto;}
+  .nav-cart{position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border:1px solid var(--border);cursor:pointer;font-size:16px;}
+  .cart-badge{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--red);border-radius:50%;font-size:10px;display:flex;align-items:center;justify-content:center;font-family:'Rajdhani';font-weight:700;}
+  .nav-user{display:flex;align-items:center;gap:10px;padding:6px 14px;background:rgba(34,160,90,0.08);border:1px solid rgba(34,160,90,0.25);cursor:pointer;}
+  .nav-user-avatar{width:28px;height:28px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;}
+  .nav-user-name{font-family:'Rajdhani';font-size:13px;letter-spacing:.5px;color:var(--white);}
+
+  /* SUBNAV */
+  .subnav{background:var(--bg1);border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;overflow-x:auto;}
+  .subnav a{font-family:'Rajdhani';font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ash2);text-decoration:none;padding:14px 20px;border-bottom:2px solid transparent;flex-shrink:0;transition:all .2s;display:flex;align-items:center;gap:6px;}
+  .subnav a:hover{color:var(--white);}
+  .subnav a.active{color:var(--green-b);border-bottom-color:var(--green-b);}
+  .subnav-sep{width:1px;height:16px;background:var(--border);margin:0 8px;flex-shrink:0;}
+  .clearance-icon{font-size:11px;background:rgba(34,160,90,0.12);border:1px solid rgba(34,160,90,0.25);padding:1px 5px;color:var(--green-b);font-family:'Rajdhani';font-size:9px;letter-spacing:1px;}
+
+  /* HERO */
+  .hero-gov{
+    background:linear-gradient(135deg,#07070A 0%,#080E08 50%,#0A140A 100%);
+    border-bottom:1px solid rgba(34,160,90,0.15);padding:48px 32px;
+    position:relative;overflow:hidden;
+  }
+  .hero-gov-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(34,160,90,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(34,160,90,0.05) 1px,transparent 1px);background-size:50px 50px;}
+  .hero-gov-glow{position:absolute;left:-100px;bottom:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(34,160,90,0.12) 0%,transparent 70%);}
+  .hero-gov-glow2{position:absolute;right:-50px;top:-50px;width:400px;height:400px;background:radial-gradient(circle,rgba(200,33,58,0.07) 0%,transparent 70%);}
+  .hero-gov-content{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:40px;}
+  .hero-gov-text .eyebrow{font-family:'Rajdhani';font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--green-b);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+  .hero-gov-text .eyebrow::before{content:'';width:20px;height:1px;background:var(--green-b);}
+  .hero-gov-title{font-family:'Bebas Neue';font-size:52px;letter-spacing:2px;line-height:1;margin-bottom:8px;}
+  .hero-gov-sub{font-size:14px;color:var(--ash);font-weight:300;max-width:480px;line-height:1.6;}
+  .hero-gov-stats{display:flex;gap:0;border:1px solid rgba(34,160,90,0.2);flex-shrink:0;}
+  .gov-stat{padding:20px 28px;text-align:center;border-right:1px solid rgba(34,160,90,0.2);}
+  .gov-stat:last-child{border-right:none;}
+  .gov-stat-num{font-family:'Bebas Neue';font-size:36px;color:var(--green-b);letter-spacing:1px;}
+  .gov-stat-label{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ash2);}
+  .access-granted-badge{display:flex;align-items:center;gap:8px;padding:10px 20px;background:rgba(34,160,90,0.08);border:1px solid rgba(34,160,90,0.25);margin-top:24px;width:fit-content;}
+  .access-granted-badge span{font-family:'Rajdhani';font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--green-b);}
+
+  /* MAIN */
+  .main-wrap{display:grid;grid-template-columns:250px 1fr;min-height:calc(100vh - 160px);}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--bg1);border-right:1px solid var(--border);padding:24px 0;}
+  .sidebar-section{margin-bottom:24px;}
+  .sidebar-title{font-family:'Rajdhani';font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--ash2);padding:0 24px;margin-bottom:10px;}
+  .sidebar-item{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;cursor:pointer;transition:background .15s;text-decoration:none;color:var(--ash);}
+  .sidebar-item:hover{background:var(--bg2);}
+  .sidebar-item.active{background:rgba(34,160,90,0.08);color:var(--white);border-left:2px solid var(--green-b);}
+  .sidebar-item-left{display:flex;align-items:center;gap:10px;font-family:'Rajdhani';font-size:13px;letter-spacing:.5px;}
+  .sidebar-item-count{font-family:'Rajdhani';font-size:11px;color:var(--ash2);}
+  .sidebar-divider{height:1px;background:var(--border);margin:8px 0;}
+  .filter-group{padding:0 24px;margin-bottom:14px;}
+  .filter-label{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ash2);margin-bottom:8px;}
+  .filter-option{display:flex;align-items:center;gap:8px;padding:5px 0;cursor:pointer;}
+  .filter-option input[type="checkbox"]{accent-color:var(--green-b);}
+  .filter-option span{font-size:13px;color:var(--ash);}
+  .filter-option small{font-family:'Rajdhani';font-size:11px;color:var(--ash2);margin-left:auto;}
+  .price-range{padding:0 24px;margin-bottom:14px;}
+  .range-inputs{display:flex;gap:8px;margin-top:8px;}
+  .range-inputs input{flex:1;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--white);font-size:12px;font-family:'DM Sans';outline:none;}
+  .range-inputs input:focus{border-color:var(--green-b);}
+  .range-slider{width:100%;height:3px;background:var(--ash3);outline:none;-webkit-appearance:none;margin-top:10px;accent-color:var(--green-b);}
+
+  /* CONTENT */
+  .content{padding:28px 32px;}
+  .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+  .content-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:2px;}
+  .content-count{font-family:'Rajdhani';font-size:13px;color:var(--ash2);padding:3px 12px;background:var(--bg2);border:1px solid var(--border);}
+  .sort-select{padding:8px 14px;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-family:'Rajdhani';font-size:12px;letter-spacing:1px;outline:none;cursor:pointer;}
+  .view-toggle{display:flex;border:1px solid var(--border);}
+  .view-btn{padding:8px 12px;background:none;border:none;color:var(--ash2);cursor:pointer;font-size:14px;transition:all .2s;}
+  .view-btn.active{background:var(--bg2);color:var(--white);}
+
+  /* GOVT ACCESS BANNER */
+  .gov-access-banner{background:rgba(34,160,90,0.06);border:1px solid rgba(34,160,90,0.25);padding:14px 20px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;}
+  .gov-access-text{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--green-b);font-family:'Rajdhani';letter-spacing:.5px;}
+  .gov-access-text::before{content:'✓';font-size:16px;}
+
+  /* CATEGORY TABS */
+  .cat-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
+  .cat-tab{padding:8px 18px;background:var(--bg2);border:1px solid var(--border);font-family:'Rajdhani';font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ash2);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:6px;}
+  .cat-tab:hover{border-color:rgba(34,160,90,0.3);color:var(--ash);}
+  .cat-tab.active{background:rgba(34,160,90,0.1);border-color:rgba(34,160,90,0.4);color:var(--green-b);}
+  .cat-tab-count{font-size:10px;background:rgba(255,255,255,0.1);padding:1px 6px;}
+
+  /* PRODUCT GRID */
+  .products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+  .prod-card{background:var(--card);border:1px solid var(--border);overflow:hidden;transition:all .25s;cursor:pointer;position:relative;}
+  .prod-card:hover{border-color:rgba(34,160,90,0.3);transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,0.35);}
+  .prod-img{width:100%;height:180px;background:var(--bg2);display:flex;align-items:center;justify-content:center;position:relative;}
+  .prod-img-inner{font-size:52px;filter:drop-shadow(0 0 20px rgba(34,160,90,0.15));}
+  .prod-wishlist{position:absolute;top:10px;right:10px;width:30px;height:30px;background:rgba(0,0,0,0.6);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ash2);}
+  .prod-badge{position:absolute;top:10px;left:10px;font-family:'Rajdhani';font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;}
+  .badge-class1{background:rgba(34,160,90,0.7);color:white;}
+  .badge-class3{background:rgba(200,160,32,0.8);color:var(--bg0);}
+  .badge-mil{background:var(--red);color:white;}
+  .prod-body{padding:16px;}
+  .prod-category{font-family:'Rajdhani';font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--green-b);margin-bottom:4px;}
+  .prod-name{font-family:'Rajdhani';font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;line-height:1.2;}
+  .prod-spec{font-size:11px;color:var(--ash2);margin-bottom:10px;line-height:1.4;}
+  .prod-tags{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap;}
+  .ptag{font-family:'Rajdhani';font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--ash2);}
+  .ptag.green{background:rgba(34,160,90,0.08);border-color:rgba(34,160,90,0.2);color:var(--green-b);}
+  .prod-foot{display:flex;justify-content:space-between;align-items:center;}
+  .prod-price{font-family:'Bebas Neue';font-size:22px;color:var(--white);letter-spacing:1px;}
+  .prod-actions{display:flex;gap:6px;}
+  .btn-cart{padding:7px 14px;background:rgba(34,160,90,0.8);border:none;color:white;font-family:'Rajdhani';font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background .2s;}
+  .btn-cart:hover{background:var(--green-b);}
+  .btn-view{padding:7px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-size:12px;cursor:pointer;transition:all .2s;}
+  .btn-view:hover{border-color:var(--ash2);color:var(--white);}
+  .prod-rating{display:flex;align-items:center;gap:4px;margin-bottom:8px;}
+  .stars{color:var(--green-b);font-size:11px;}
+  .rating-count{font-size:11px;color:var(--ash2);}
+  .bulk-badge{font-family:'Rajdhani';font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;background:rgba(200,160,32,0.1);border:1px solid rgba(200,160,32,0.25);color:var(--gold-b);margin-left:4px;}
+  .section-divider{display:flex;align-items:center;gap:16px;margin:40px 0 24px;}
+  .section-divider-line{flex:1;height:1px;background:var(--border);}
+  .section-divider-title{font-family:'Bebas Neue';font-size:20px;letter-spacing:3px;color:var(--ash2);white-space:nowrap;}
+  .section-divider-badge{font-family:'Rajdhani';font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;background:rgba(34,160,90,0.08);border:1px solid rgba(34,160,90,0.25);color:var(--green-b);}
+
+  /* PAGINATION */
+  .pagination{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:40px;}
+  .page-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--bg2);border:1px solid var(--border);color:var(--ash);font-family:'Rajdhani';font-size:13px;cursor:pointer;transition:all .2s;}
+  .page-btn.active{background:rgba(34,160,90,0.8);border-color:rgba(34,160,90,0.8);color:white;}
+  .page-btn:hover:not(.active){border-color:rgba(34,160,90,0.3);color:var(--white);}
+</style>
+</head>
+<body>
+
+<!-- CLEARANCE BAR -->
+<div class="clearance-bar">
+  <div class="clearance-left">
+    <span class="clearance-dot"></span>
+    <div class="clearance-level">VERIFIED ACCESS — FULL CATALOG</div>
+    <div class="clearance-name">LT. JAMES R. HOLLOWAY · BADGE: GOV-4471</div>
+  </div>
+  <div class="clearance-right">Session secure · Encrypted · 47 min remaining</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">F<span>I</span>RS</a>
+  <span class="logo-badge">Gov. Portal</span>
+  <div class="nav-search">
+    <input type="text" placeholder="Search all categories — rifles, snipers, parts...">
+    <span class="nav-search-icon">🔍</span>
+  </div>
+  <ul>
+    <li><a href="#" class="active">Arsenal</a></li>
+    <li><a href="#">Bulk Orders</a></li>
+    <li><a href="#">Unit Requisitions</a></li>
+    <li><a href="#">Compliance</a></li>
+  </ul>
+  <div class="nav-end">
+    <div class="nav-cart">🛒<div class="cart-badge">4</div></div>
+    <div class="nav-user">
+      <div class="nav-user-avatar" style="background:var(--green);">J</div>
+      <div class="nav-user-name">Lt. Holloway</div>
+    </div>
+  </div>
+</nav>
+
+<!-- SUBNAV — FULL ACCESS -->
+<div class="subnav">
+  <a href="#">Handguns <span class="clearance-icon">✓</span></a>
+  <a href="#">Revolvers <span class="clearance-icon">✓</span></a>
+  <div class="subnav-sep"></div>
+  <a href="#" class="active">Rifles <span class="clearance-icon">✓</span></a>
+  <a href="#">Shotguns <span class="clearance-icon">✓</span></a>
+  <a href="#">Snipers <span class="clearance-icon">✓</span></a>
+  <div class="subnav-sep"></div>
+  <a href="#">Tactical Gear <span class="clearance-icon">✓</span></a>
+  <a href="#">Parts & Acc. <span class="clearance-icon">✓</span></a>
+  <a href="#">Ammunition <span class="clearance-icon">✓</span></a>
+  <a href="#">Optics <span class="clearance-icon">✓</span></a>
+  <div class="subnav-sep"></div>
+  <a href="#">Bulk / Requisitions</a>
+</div>
+
+<!-- HERO -->
+<div class="hero-gov">
+  <div class="hero-gov-grid"></div>
+  <div class="hero-gov-glow"></div>
+  <div class="hero-gov-glow2"></div>
+  <div class="hero-gov-content">
+    <div class="hero-gov-text">
+      <div class="eyebrow">Government & Verified Militia — Full Access</div>
+      <div class="hero-gov-title">TACTICAL ARSENAL</div>
+      <div class="hero-gov-sub">Your verified credentials grant full catalog access including rifles, precision platforms, tactical gear, and Class III items where federally authorized.</div>
+      <div class="access-granted-badge">
+        <span class="clearance-dot"></span>
+        <span>Full Catalog Access Granted · Credential Expires: Dec 31, 2026</span>
+      </div>
+    </div>
+    <div class="hero-gov-stats">
+      <div class="gov-stat"><div class="gov-stat-num">7,482</div><div class="gov-stat-label">Total Items</div></div>
+      <div class="gov-stat"><div class="gov-stat-num">342</div><div class="gov-stat-label">Rifle Platforms</div></div>
+      <div class="gov-stat"><div class="gov-stat-num">648</div><div class="gov-stat-label">Sniper Systems</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main-wrap">
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Full Catalog</div>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">🔫 Handguns</div><div class="sidebar-item-count">2,847</div></a>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">🎯 Revolvers</div><div class="sidebar-item-count">1,204</div></a>
+      <a href="#" class="sidebar-item active"><div class="sidebar-item-left">🔫 Rifles</div><div class="sidebar-item-count">3,580</div></a>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">🔫 Shotguns</div><div class="sidebar-item-count">1,092</div></a>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">🎯 Sniper Platforms</div><div class="sidebar-item-count">648</div></a>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">⚙️ Parts & Acc.</div><div class="sidebar-item-count">18,300</div></a>
+      <a href="#" class="sidebar-item"><div class="sidebar-item-left">🧰 Tactical Gear</div><div class="sidebar-item-count">4,200</div></a>
+    </div>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Caliber / Gauge</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>5.56 NATO</span><small>847</small></div>
+        <div class="filter-option"><input type="checkbox"><span>7.62×39mm</span><small>412</small></div>
+        <div class="filter-option"><input type="checkbox"><span>7.62 NATO</span><small>289</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.308 Win</span><small>234</small></div>
+        <div class="filter-option"><input type="checkbox"><span>6.5 Creedmoor</span><small>178</small></div>
+        <div class="filter-option"><input type="checkbox"><span>.338 Lapua</span><small>67</small></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Platform</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>AR-15</span><small>432</small></div>
+        <div class="filter-option"><input type="checkbox"><span>AR-10</span><small>198</small></div>
+        <div class="filter-option"><input type="checkbox"><span>AK Platform</span><small>276</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Bolt Action</span><small>334</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Bullpup</span><small>89</small></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Classification</div>
+      <div class="filter-group">
+        <div class="filter-option"><input type="checkbox" checked><span>Title I</span><small>2,840</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Title II / NFA</span><small>312</small></div>
+        <div class="filter-option"><input type="checkbox"><span>Military Grade</span><small>156</small></div>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-title">Price Range</div>
+      <div class="price-range">
+        <div class="range-inputs">
+          <input type="text" value="$500">
+          <input type="text" value="$8,000">
+        </div>
+        <input type="range" class="range-slider" min="0" max="15000" value="8000">
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- GOV NOTICE -->
+    <div class="gov-access-banner">
+      <div class="gov-access-text">Full catalog unlocked — All firearms categories available to your verified government account</div>
+      <div style="font-family:'Rajdhani';font-size:11px;letter-spacing:1.5px;color:var(--green-b);">UNIT BUDGET: $47,500 REMAINING</div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="content-header">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <div class="content-title">RIFLES</div>
+        <div class="content-count">3,580 Results</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <select class="sort-select"><option>Sort: Featured</option><option>Price: Low to High</option><option>Price: High to Low</option><option>Mil-Spec First</option></select>
+        <div class="view-toggle"><button class="view-btn active">⊞</button><button class="view-btn">☰</button></div>
+      </div>
+    </div>
+
+    <!-- CATEGORY TABS -->
+    <div class="cat-tabs">
+      <div class="cat-tab">All Rifles <span class="cat-tab-count">3,580</span></div>
+      <div class="cat-tab active">AR Platform <span class="cat-tab-count">1,247</span></div>
+      <div class="cat-tab">AK Platform <span class="cat-tab-count">498</span></div>
+      <div class="cat-tab">Precision / Bolt <span class="cat-tab-count">334</span></div>
+      <div class="cat-tab">Bullpup <span class="cat-tab-count">89</span></div>
+      <div class="cat-tab">DMR / Battle <span class="cat-tab-count">212</span></div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="products-grid">
+      <div class="prod-card">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist">♡</div>
+          <div class="prod-badge badge-mil">Mil-Spec</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">AR Platform · 5.56 NATO</div>
+          <div class="prod-name">BCM RECCE-16 MCMR</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(342) <span class="bulk-badge">Bulk</span></span></div>
+          <div class="prod-spec">16" barrel · M-LOK · Nitride finish · MIL-STD-1913</div>
+          <div class="prod-tags"><span class="ptag green">Mil-Spec</span><span class="ptag green">Ready to Ship</span><span class="ptag">FFL Req.</span></div>
+          <div class="prod-foot"><div class="prod-price">$1,449</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist">♡</div>
+          <div class="prod-badge badge-class1">Title I</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">AR Platform · 5.56 NATO</div>
+          <div class="prod-name">Daniel Defense DDM4 V7</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(287) <span class="bulk-badge">Bulk</span></span></div>
+          <div class="prod-spec">16" CHF barrel · M-LOK · RIS III · Cold hammer forged</div>
+          <div class="prod-tags"><span class="ptag green">Premium</span><span class="ptag green">FFL Compliant</span></div>
+          <div class="prod-foot"><div class="prod-price">$2,099</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img">
+          <div class="prod-img-inner">🔫</div>
+          <div class="prod-wishlist">♡</div>
+          <div class="prod-badge badge-class3">NFA Item</div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-category">SBR · 5.56 NATO</div>
+          <div class="prod-name">COLT M4A1 SOCOM</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(198)</span></div>
+          <div class="prod-spec">14.5" M4 profile · FSB · BUIS · Mil contract platform</div>
+          <div class="prod-tags"><span class="ptag" style="background:rgba(200,160,32,0.1);border-color:rgba(200,160,32,0.3);color:var(--gold-b);">NFA Title II</span><span class="ptag">SOF Use</span></div>
+          <div class="prod-foot"><div class="prod-price">$3,200</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🔫</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-mil">Mil-Spec</div></div>
+        <div class="prod-body">
+          <div class="prod-category">AK Platform · 7.62×39mm</div>
+          <div class="prod-name">Arsenal SLR-107FR</div>
+          <div class="prod-rating"><span class="stars">★★★★☆</span><span class="rating-count">(145)</span></div>
+          <div class="prod-spec">16.25" barrel · Bulgarian mil-spec · Side-folding stock</div>
+          <div class="prod-tags"><span class="ptag green">Mil-Grade</span><span class="ptag">Ready</span></div>
+          <div class="prod-foot"><div class="prod-price">$1,149</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🎯</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-mil">Precision</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Bolt Action · .308 Win</div>
+          <div class="prod-name">Remington 700 SPS Tactical</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(324)</span></div>
+          <div class="prod-spec">24" barrel · Threaded muzzle · Varmint-spec stock</div>
+          <div class="prod-tags"><span class="ptag green">Precision</span><span class="ptag">Optics Ready</span></div>
+          <div class="prod-foot"><div class="prod-price">$849</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🔫</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-mil">Mil-Spec</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Battle Rifle · 7.62 NATO</div>
+          <div class="prod-name">LWRC REPR MKII 16"</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(212)</span></div>
+          <div class="prod-spec">16" spiral fluted · Nickel boron BCG · M-LOK</div>
+          <div class="prod-tags"><span class="ptag green">LWRC Series</span><span class="ptag green">Elite Platform</span></div>
+          <div class="prod-foot"><div class="prod-price">$2,649</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SNIPER SECTION -->
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-title">PRECISION PLATFORMS</div>
+      <div class="section-divider-badge">✓ Cleared Access</div>
+      <div class="section-divider-line"></div>
+    </div>
+    <div class="products-grid">
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🎯</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-class1">Precision</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Bolt Action · .338 Lapua</div>
+          <div class="prod-name">Accuracy International AXMC</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(87)</span></div>
+          <div class="prod-spec">26" barrel · Folding chassis · NATO stock</div>
+          <div class="prod-tags"><span class="ptag green">Elite Precision</span><span class="ptag">Long Range</span></div>
+          <div class="prod-foot"><div class="prod-price">$7,500</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🎯</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-mil">Mil-Use</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Bolt Action · 6.5 Creedmoor</div>
+          <div class="prod-name">Savage 110 Elite Precision</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(156)</span></div>
+          <div class="prod-spec">26" target barrel · MDT chassis · AccuTrigger</div>
+          <div class="prod-tags"><span class="ptag green">Sub-MOA</span><span class="ptag green">Chassis System</span></div>
+          <div class="prod-foot"><div class="prod-price">$1,699</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+      <div class="prod-card">
+        <div class="prod-img"><div class="prod-img-inner">🎯</div><div class="prod-wishlist">♡</div><div class="prod-badge badge-class1">Elite</div></div>
+        <div class="prod-body">
+          <div class="prod-category">Bolt Action · .308 Win</div>
+          <div class="prod-name">Barrett MRAD Mk22</div>
+          <div class="prod-rating"><span class="stars">★★★★★</span><span class="rating-count">(64)</span></div>
+          <div class="prod-spec">24" fluted barrel · AICS mags · Multi-caliber</div>
+          <div class="prod-tags"><span class="ptag green">Barrett Series</span><span class="ptag">Multi-Cal</span></div>
+          <div class="prod-foot"><div class="prod-price">$6,200</div><div class="prod-actions"><button class="btn-view">👁</button><button class="btn-cart">Add</button></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <button class="page-btn">‹</button>
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <span style="color:var(--ash2);font-family:'Rajdhani';">...</span>
+      <button class="page-btn">72</button>
+      <button class="page-btn">›</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
