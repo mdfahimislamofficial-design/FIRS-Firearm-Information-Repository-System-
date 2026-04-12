@@ -1,206 +1,196 @@
 package com.firs.controller;
 
+import com.firs.model.Product;
+import com.firs.repository.ProductRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.firs.model.Product;
-import com.firs.repository.ProductRepository;
-
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true")
 @RequestMapping("/api/products")
 public class ProductController {
 
     @Autowired
     private ProductRepository productRepository;
 
-    // GET ALL PRODUCTS - SELECT * FROM products
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
+    public ResponseEntity<List<Product>> getAllProducts(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String type,
+            @RequestParam(required = false) String manufacturer,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy) {
+
         List<Product> products = productRepository.findAll();
+
+        if (keyword != null && !keyword.isBlank()) {
+            String q = keyword.toLowerCase(Locale.ROOT);
+            products = products.stream().filter(product -> contains(product.getName(), q)
+                    || contains(product.getSku(), q)
+                    || contains(product.getType(), q)
+                    || contains(product.getManufacturer(), q)
+                    || contains(product.getCaliber(), q)).collect(Collectors.toList());
+        }
+
+        if (type != null && !type.isBlank()) {
+            products = products.stream().filter(p -> type.equalsIgnoreCase(p.getType())).collect(Collectors.toList());
+        }
+
+        if (manufacturer != null && !manufacturer.isBlank()) {
+            products = products.stream().filter(p -> manufacturer.equalsIgnoreCase(p.getManufacturer()))
+                    .collect(Collectors.toList());
+        }
+
+        if (minPrice != null) {
+            products = products.stream().filter(p -> p.getPrice() != null && p.getPrice() >= minPrice)
+                    .collect(Collectors.toList());
+        }
+
+        if (maxPrice != null) {
+            products = products.stream().filter(p -> p.getPrice() != null && p.getPrice() <= maxPrice)
+                    .collect(Collectors.toList());
+        }
+
+        if (sortBy != null) {
+            switch (sortBy.toLowerCase(Locale.ROOT)) {
+                case "price_asc" -> products.sort(Comparator.comparing(Product::getPrice, Comparator.nullsLast(Double::compareTo)));
+                case "price_desc" -> products.sort(Comparator.comparing(Product::getPrice, Comparator.nullsLast(Double::compareTo)).reversed());
+                case "stock_desc" -> products.sort(Comparator.comparing(Product::getStock, Comparator.nullsLast(Integer::compareTo)).reversed());
+                default -> products.sort(Comparator.comparing(Product::getName, Comparator.nullsLast(String::compareToIgnoreCase)));
+            }
+        }
+
         return ResponseEntity.ok(products);
     }
 
-    // GET PRODUCT BY ID - SELECT * FROM products WHERE id = ?
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getProductById(@PathVariable Long id) {
         Optional<Product> product = productRepository.findById(id);
-
         if (product.isPresent()) {
-            return ResponseEntity.ok(Map.of("status", "success", "product", product.get()));
-        } else {
-            return ResponseEntity.notFound().build();
+            Map<String, Object> res = new HashMap<>();
+            res.put("status", "success");
+            res.put("product", product.get());
+            return ResponseEntity.ok(res);
         }
+        return ResponseEntity.notFound().build();
     }
 
-    // GET PRODUCTS BY TYPE - SELECT * FROM products WHERE type = ?
     @GetMapping("/type/{type}")
     public ResponseEntity<List<Product>> getProductsByType(@PathVariable String type) {
-        List<Product> products = productRepository.findByTypeIgnoreCase(type);
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productRepository.findByTypeIgnoreCase(type));
     }
 
-    // GET PRODUCTS BY MANUFACTURER - SELECT * FROM products WHERE manufacturer = ?
-    @GetMapping("/manufacturer/{manufacturer}")
-    public ResponseEntity<List<Product>> getProductsByManufacturer(@PathVariable String manufacturer) {
-        List<Product> products = productRepository.findByManufacturerIgnoreCase(manufacturer);
-        return ResponseEntity.ok(products);
-    }
-
-    // SEARCH PRODUCTS - SELECT * FROM products WHERE name LIKE ? OR sku LIKE ?
     @GetMapping("/search")
     public ResponseEntity<List<Product>> searchProducts(@RequestParam String keyword) {
-        List<Product> products = productRepository.searchProducts(keyword);
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productRepository.searchProducts(keyword));
     }
 
-    // GET LOW STOCK PRODUCTS - SELECT * FROM products WHERE stock < threshold
     @GetMapping("/low-stock")
     public ResponseEntity<List<Product>> getLowStockProducts(@RequestParam(defaultValue = "10") Integer threshold) {
-        List<Product> products = productRepository.findByStockLessThan(threshold);
-        return ResponseEntity.ok(products);
+        return ResponseEntity.ok(productRepository.findByStockLessThan(threshold));
     }
 
-    // ADD PRODUCT - INSERT INTO products
     @PostMapping
-    public ResponseEntity<Map<String, Object>> addProduct(@RequestBody Product product,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
+    public ResponseEntity<Map<String, Object>> createProduct(@RequestBody Product product, HttpSession session) {
+        if (!hasRole(session, "ADMIN") && !hasRole(session, "DEALER")) {
+            return unauthorized("Only admin or dealer can add firearms");
+        }
+
+        Map<String, Object> validation = validateProduct(product);
+        if (validation != null) {
+            return ResponseEntity.badRequest().body(validation);
+        }
+
+        product.setType(product.getType().toUpperCase(Locale.ROOT));
+        Product savedProduct = productRepository.save(product);
 
         Map<String, Object> res = new HashMap<>();
+        res.put("status", "success");
+        res.put("message", "Firearm listing created successfully");
+        res.put("product", savedProduct);
+        return ResponseEntity.ok(res);
+    }
 
-        // Check if user has dealer or admin role
-        if (!"DEALER".equals(role) && !"ADMIN".equals(role)) {
-            res.put("status", "error");
-            res.put("message", "Access denied. Dealer or Admin role required.");
-            return ResponseEntity.status(403).body(res);
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> updateProduct(@PathVariable Long id, @RequestBody Product updatedProduct,
+            HttpSession session) {
+        if (!hasRole(session, "ADMIN") && !hasRole(session, "DEALER")) {
+            return unauthorized("Only admin or dealer can update firearms");
         }
 
-        // Validate product data
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            res.put("status", "error");
-            res.put("message", "Product name is required");
-            return ResponseEntity.badRequest().body(res);
+        Optional<Product> existingOpt = productRepository.findById(id);
+        if (existingOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
 
-        if (product.getPrice() == null || product.getPrice() <= 0) {
+        Product product = existingOpt.get();
+        if (updatedProduct.getName() != null && !updatedProduct.getName().isBlank()) product.setName(updatedProduct.getName().trim());
+        if (updatedProduct.getSku() != null && !updatedProduct.getSku().isBlank()) product.setSku(updatedProduct.getSku().trim());
+        if (updatedProduct.getType() != null && !updatedProduct.getType().isBlank()) product.setType(updatedProduct.getType().trim().toUpperCase(Locale.ROOT));
+        if (updatedProduct.getManufacturer() != null) product.setManufacturer(updatedProduct.getManufacturer().trim());
+        if (updatedProduct.getCaliber() != null) product.setCaliber(updatedProduct.getCaliber().trim());
+        if (updatedProduct.getDescription() != null) product.setDescription(updatedProduct.getDescription().trim());
+        if (updatedProduct.getImage() != null) product.setImage(updatedProduct.getImage().trim());
+        if (updatedProduct.getPrice() != null) product.setPrice(updatedProduct.getPrice());
+        if (updatedProduct.getStock() != null) product.setStock(updatedProduct.getStock());
+
+        Product saved = productRepository.save(product);
+        Map<String, Object> res = new HashMap<>();
+        res.put("status", "success");
+        res.put("message", "Firearm listing updated successfully");
+        res.put("product", saved);
+        return ResponseEntity.ok(res);
+    }
+
+    private boolean contains(String value, String keyword) {
+        return value != null && value.toLowerCase(Locale.ROOT).contains(keyword);
+    }
+
+    private boolean hasRole(HttpSession session, String role) {
+        Object sessionRole = session.getAttribute("userRole");
+        return sessionRole != null && role.equalsIgnoreCase(String.valueOf(sessionRole));
+    }
+
+    private ResponseEntity<Map<String, Object>> unauthorized(String message) {
+        Map<String, Object> res = new HashMap<>();
+        res.put("status", "error");
+        res.put("message", message);
+        return ResponseEntity.status(401).body(res);
+    }
+
+    private Map<String, Object> validateProduct(Product product) {
+        Map<String, Object> res = new HashMap<>();
+        if (product.getName() == null || product.getName().isBlank()) {
+            res.put("status", "error");
+            res.put("message", "Firearm name is required");
+            return res;
+        }
+        if (product.getType() == null || product.getType().isBlank()) {
+            res.put("status", "error");
+            res.put("message", "Firearm type is required");
+            return res;
+        }
+        if (product.getPrice() == null || product.getPrice() < 0) {
             res.put("status", "error");
             res.put("message", "Valid price is required");
-            return ResponseEntity.badRequest().body(res);
+            return res;
         }
-
-        if (product.getType() == null || product.getType().trim().isEmpty()) {
+        if (product.getStock() != null && product.getStock() < 0) {
             res.put("status", "error");
-            res.put("message", "Product type is required");
-            return ResponseEntity.badRequest().body(res);
+            res.put("message", "Stock cannot be negative");
+            return res;
         }
-
-        // Generate SKU if not provided
-        if (product.getSku() == null || product.getSku().trim().isEmpty()) {
-            product.setSku(generateSku(product.getName(), product.getType()));
-        }
-
-        // INSERT INTO products
-        Product saved = productRepository.save(product);
-
-        res.put("status", "success");
-        res.put("message", "Product added successfully");
-        res.put("product", saved);
-
-        return ResponseEntity.ok(res);
-    }
-
-    // UPDATE PRODUCT - UPDATE products SET ... WHERE id = ?
-    @PutMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> updateProduct(@PathVariable Long id,
-            @RequestBody Product updated,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        Map<String, Object> res = new HashMap<>();
-
-        if (!"DEALER".equals(role) && !"ADMIN".equals(role)) {
-            res.put("status", "error");
-            res.put("message", "Access denied. Dealer or Admin role required.");
-            return ResponseEntity.status(403).body(res);
-        }
-
-        Optional<Product> existing = productRepository.findById(id);
-
-        if (existing.isEmpty()) {
-            res.put("status", "error");
-            res.put("message", "Product not found");
-            return ResponseEntity.notFound().build();
-        }
-
-        Product product = existing.get();
-
-        // Update fields
-        if (updated.getName() != null)
-            product.setName(updated.getName());
-        if (updated.getPrice() != null)
-            product.setPrice(updated.getPrice());
-        if (updated.getImage() != null)
-            product.setImage(updated.getImage());
-        if (updated.getType() != null)
-            product.setType(updated.getType());
-        if (updated.getDescription() != null)
-            product.setDescription(updated.getDescription());
-        if (updated.getStock() != null)
-            product.setStock(updated.getStock());
-        if (updated.getCaliber() != null)
-            product.setCaliber(updated.getCaliber());
-        if (updated.getManufacturer() != null)
-            product.setManufacturer(updated.getManufacturer());
-        if (updated.getSku() != null)
-            product.setSku(updated.getSku());
-
-        // UPDATE products SET ... WHERE id = ?
-        Product saved = productRepository.save(product);
-
-        res.put("status", "success");
-        res.put("message", "Product updated successfully");
-        res.put("product", saved);
-
-        return ResponseEntity.ok(res);
-    }
-
-    // DELETE PRODUCT - DELETE FROM products WHERE id = ?
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> deleteProduct(@PathVariable Long id,
-            @RequestHeader(value = "X-User-Role", required = false) String role) {
-
-        Map<String, Object> res = new HashMap<>();
-
-        if (!"DEALER".equals(role) && !"ADMIN".equals(role)) {
-            res.put("status", "error");
-            res.put("message", "Access denied. Dealer or Admin role required.");
-            return ResponseEntity.status(403).body(res);
-        }
-
-        if (!productRepository.existsById(id)) {
-            res.put("status", "error");
-            res.put("message", "Product not found");
-            return ResponseEntity.notFound().build();
-        }
-
-        // DELETE FROM products WHERE id = ?
-        productRepository.deleteById(id);
-
-        res.put("status", "success");
-        res.put("message", "Product deleted successfully");
-
-        return ResponseEntity.ok(res);
-    }
-
-    // Helper method to generate SKU
-    private String generateSku(String name, String type) {
-        String prefix = type.substring(0, Math.min(3, type.length())).toUpperCase();
-        String namePart = name.replaceAll("[^A-Za-z0-9]", "").substring(0, Math.min(5, name.length())).toUpperCase();
-        return prefix + "-" + namePart + "-" + System.currentTimeMillis();
+        return null;
     }
 }

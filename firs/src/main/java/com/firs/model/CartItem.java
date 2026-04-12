@@ -1,34 +1,27 @@
 package com.firs.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "cart_items")
+@Table(name = "cart_items", uniqueConstraints = {
+        @UniqueConstraint(columnNames = { "user_id", "product_id" })
+})
 public class CartItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "product_id", nullable = false)
-    private Long productId;
-
-    private Integer quantity = 1;
-
-    @Column(name = "added_at", updatable = false)
-    private LocalDateTime addedAt;
-
-    @Transient
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @PrePersist
-    protected void onCreate() {
-        addedAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private Integer quantity = 1;
 
     // Getters and Setters
     public Long getId() {
@@ -39,28 +32,12 @@ public class CartItem {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Long productId) {
-        this.productId = productId;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Product getProduct() {
@@ -69,5 +46,13 @@ public class CartItem {
 
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

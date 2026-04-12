@@ -1,6 +1,8 @@
 package com.firs.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -17,6 +19,7 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 
@@ -42,6 +45,21 @@ public class User {
 
     private String status = "PENDING";
 
+    @Column(name = "profile_image")
+    private String profileImage;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
+    @Column(name = "address")
+    private String address;
+
+    private String city;
+    private String state;
+
+    @Column(name = "zip_code")
+    private String zipCode;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
@@ -59,57 +77,156 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    // Getters
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getEmail() {
         return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getDob() {
         return dob;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
     }
 
     public String getNid() {
         return nid;
     }
 
+    public void setNid(String nid) {
+        this.nid = nid;
+    }
+
     public String getComment() {
         return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getRole() {
         return role;
     }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public String getBadgeNumber() {
         return badgeNumber;
+    }
+
+    public void setBadgeNumber(String badgeNumber) {
+        this.badgeNumber = badgeNumber;
     }
 
     public String getDepartment() {
         return department;
     }
 
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
     public String getFflNumber() {
         return fflNumber;
+    }
+
+    public void setFflNumber(String fflNumber) {
+        this.fflNumber = fflNumber;
     }
 
     public String getBusinessName() {
         return businessName;
     }
 
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public String getZipCode() {
+        return zipCode;
+    }
+
+    public void setZipCode(String zipCode) {
+        this.zipCode = zipCode;
     }
 
     public LocalDateTime getCreatedAt() {
@@ -120,56 +237,7 @@ public class User {
         return updatedAt;
     }
 
-    // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setDob(String dob) {
-        this.dob = dob;
-    }
-
-    public void setNid(String nid) {
-        this.nid = nid;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public void setBadgeNumber(String badgeNumber) {
-        this.badgeNumber = badgeNumber;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public void setFflNumber(String fflNumber) {
-        this.fflNumber = fflNumber;
-    }
-
-    public void setBusinessName(String businessName) {
-        this.businessName = businessName;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

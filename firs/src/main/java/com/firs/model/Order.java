@@ -16,8 +16,12 @@ public class Order {
     @Column(name = "order_number", unique = true, nullable = false)
     private String orderNumber;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<OrderItem> items = new ArrayList<>();
 
     @Column(name = "total_amount", nullable = false)
     private Double totalAmount;
@@ -33,22 +37,19 @@ public class Order {
     @Column(name = "ffl_dealer_id")
     private Long fflDealerId;
 
+    @Column(name = "tracking_number")
+    private String trackingNumber;
+
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<OrderItem> items = new ArrayList<>();
-
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (orderNumber == null) {
-            orderNumber = "ORD-" + System.currentTimeMillis();
-        }
     }
 
     @PreUpdate
@@ -73,12 +74,20 @@ public class Order {
         this.orderNumber = orderNumber;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<OrderItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<OrderItem> items) {
+        this.items = items;
     }
 
     public Double getTotalAmount() {
@@ -121,11 +130,19 @@ public class Order {
         this.fflDealerId = fflDealerId;
     }
 
-    public List<OrderItem> getItems() {
-        return items;
+    public String getTrackingNumber() {
+        return trackingNumber;
     }
 
-    public void setItems(List<OrderItem> items) {
-        this.items = items;
+    public void setTrackingNumber(String trackingNumber) {
+        this.trackingNumber = trackingNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 }
