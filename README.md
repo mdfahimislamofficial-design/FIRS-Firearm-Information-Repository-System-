@@ -1,4 +1,4 @@
-# FIRS — Firearm Inventory & Repository System 🔴
+# FIRS — Firearm Information & Repository System 🔴
 
 
 
