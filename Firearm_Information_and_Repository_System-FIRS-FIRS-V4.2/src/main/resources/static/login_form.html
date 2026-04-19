@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIRS | Sign In</title>
+    <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .login-box{width:100%;max-width:420px;background:var(--bg1);border:1px solid var(--border);padding:40px;margin:0 auto;}
+        .field{margin-bottom:20px;}
+        .field label{display:block;font-family:'Rajdhani';font-size:11px;letter-spacing:2px;color:var(--ash2);margin-bottom:6px;}
+        .field input{width:100%;padding:12px;background:var(--bg2);border:1px solid var(--border);color:white;}
+        .btn{width:100%;padding:14px;background:var(--red);border:none;color:white;font-family:'Rajdhani';font-weight:700;letter-spacing:2px;cursor:pointer;}
+        .links{text-align:center;margin-top:24px;color:var(--ash2);}
+        .links a{color:var(--red);text-decoration:none;}
+        body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg0);}
+        .demo-hint{font-size:11px;color:var(--ash2);margin-top:20px;border-top:1px solid var(--border);padding-top:16px;}
+    </style>
+</head>
+<body>
+<div class="login-box">
+    <div class="logo" style="text-align:center;margin-bottom:32px;">F<span>I</span>RS</div>
+    <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="your@email.com" value="customer@firs.com">
+    </div>
+    <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" value="customer123">
+    </div>
+    <button class="btn" onclick="handleLoginForm()">Sign In</button>
+    <div class="links">
+        <a href="auth_page.html">Create account</a> · <a href="#">Forgot password?</a>
+    </div>
+    <div class="demo-hint">
+        Demo: customer@firs.com / customer123<br>
+        gov@firs.com / gov123 · dealer@firs.com / dealer123 · admin@firs.com / admin123
+    </div>
+</div>
+<script src="script.js"></script>
+<script>
+    function handleLoginForm() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        if (typeof authenticateAndRedirect === 'function') {
+            authenticateAndRedirect(email, password);
+        } else {
+            alert('Authentication system not loaded.');
+        }
+    }
+</script>
+</body>
+</html>

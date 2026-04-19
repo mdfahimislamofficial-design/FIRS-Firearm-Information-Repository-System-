@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRS | Checkout</title>
+  <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      background: var(--bg0);
+    }
+
+    .checkout-wrapper {
+      max-width: 800px;
+      margin: 100px auto 40px;
+      padding: 0 24px;
+    }
+
+    .checkout-card {
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      padding: 32px;
+    }
+
+    .checkout-title {
+      font-family: 'Bebas Neue';
+      font-size: 36px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+
+    .checkout-title span {
+      color: var(--red);
+    }
+
+    .cart-items {
+      margin: 24px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cart-item-row:last-child {
+      border-bottom: none;
+    }
+
+    .item-info h4 {
+      font-family: 'Rajdhani';
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+
+    .item-meta {
+      font-size: 12px;
+      color: var(--ash2);
+    }
+
+    .item-price {
+      font-family: 'Bebas Neue';
+      font-size: 20px;
+      color: var(--red);
+    }
+
+    .totals {
+      margin: 24px 0;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+      color: var(--ash);
+    }
+
+    .total-row.final {
+      font-family: 'Bebas Neue';
+      font-size: 28px;
+      color: var(--white);
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      padding-top: 16px;
+    }
+
+    .ffl-note {
+      background: rgba(200, 33, 58, 0.08);
+      border: 1px solid var(--border-r);
+      padding: 16px;
+      margin: 24px 0;
+      font-size: 13px;
+      color: var(--ash);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-place-order {
+      width: 100%;
+      padding: 16px;
+      background: var(--red);
+      border: none;
+      color: white;
+      font-family: 'Rajdhani';
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-place-order:hover {
+      background: var(--red-b);
+      box-shadow: 0 0 24px rgba(200, 33, 58, 0.4);
+    }
+
+    .btn-place-order:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .empty-cart-message {
+      text-align: center;
+      padding: 40px;
+      color: var(--ash2);
+      font-family: 'Rajdhani';
+      font-size: 18px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: var(--ash);
+      text-decoration: none;
+      font-family: 'Rajdhani';
+    }
+  </style>
+</head>
+
+<body>
+  <div class="checkout-wrapper">
+    <a href="#" id="backLink" class="back-link">← Continue Shopping</a>
+    <div class="checkout-card">
+      <div class="checkout-title">SECURE <span>CHECKOUT</span></div>
+      <div id="cartContent"></div>
+      <div class="ffl-note"><img src="./resources/icons/icons_lock.png" alt="lock" width="20"> All firearms ship to your
+        selected FFL dealer. Background check required at pickup.</div>
+      <button class="btn-place-order" id="placeOrderBtn" onclick="placeOrder()">Confirm Order →</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    function getCart() { return JSON.parse(localStorage.getItem('firs_cart')) || []; }
+    function renderCheckout() {
+      const cart = getCart(), container = document.getElementById('cartContent'), placeBtn = document.getElementById('placeOrderBtn');
+      if (cart.length === 0) {
+        container.innerHTML = '<div class="empty-cart-message">Your cart is empty.<br><a href="index.html" style="color:var(--red);">Return to shop</a></div>';
+        placeBtn.disabled = true; return;
+      }
+      let subtotal = 0, itemsHtml = '<div class="cart-items">';
+      cart.forEach(item => {
+        subtotal += item.price * item.qty;
+        const icon = item.id?.includes('g') || item.id?.includes('p') ? './resources/icons/icons_handgun.png' : './resources/icons/icons_revolver.png';
+        itemsHtml += `<div class="cart-item-row"><div class="item-info"><h4><img src="${icon}" width="16"> ${item.name}</h4><div class="item-meta">Qty: ${item.qty} · ${item.spec || ''}</div></div><div class="item-price">$${(item.price * item.qty).toFixed(0)}</div></div>`;
+      });
+      itemsHtml += '</div>';
+      const fflFee = cart.length * 25, total = subtotal + fflFee;
+      itemsHtml += `<div class="totals"><div class="total-row"><span>Subtotal</span><span>$${subtotal.toFixed(0)}</span></div><div class="total-row"><span>FFL Transfer Fee (est)</span><span>$${fflFee}</span></div><div class="total-row final"><span>Total</span><span>$${total.toFixed(0)}</span></div></div>`;
+      container.innerHTML = itemsHtml;
+      placeBtn.disabled = false;
+    }
+    window.placeOrder = async function () {
+      const cart = getCart();
+      if (cart.length === 0) { alert('Your cart is empty.'); return; }
+      const user = getCurrentUser();
+      if (!user) { alert('Please log in to place an order.'); window.location.href = 'auth_page.html'; return; }
+      const orderData = { userEmail: user.email, items: cart.map(item => ({ name: item.name, qty: item.qty })) };
+      try {
+        const savedOrder = await createOrder(orderData);
+        const master = getMasterInventory();
+        cart.forEach(cartItem => {
+          const prod = master.find(p => p.id === cartItem.id);
+          if (prod) prod.qty = Math.max(0, prod.qty - cartItem.qty);
+        });
+        saveMasterInventory(master);
+        if (typeof clearCart === 'function') clearCart(); else localStorage.removeItem('firs_cart');
+        alert(`Order placed successfully!\nOrder ID: ${savedOrder.id}\nTotal: $${savedOrder.totalAmount}`);
+        window.location.href = 'order_history.html';
+      } catch (e) {
+        console.error('Order error:', e);
+        alert('Order failed: ' + (e.message || 'Could not connect to server.'));
+      }
+    };
+    function setBackLink() {
+      const user = getCurrentUser();
+      const pages = { customer: 'customer_view.html', govt: 'govt_view.html', dealer: 'dealer_view.html', admin: 'admin_dashboard.html' };
+      document.getElementById('backLink').href = user ? pages[user.role] || 'index.html' : 'index.html';
+    }
+    window.addEventListener('DOMContentLoaded', () => { if (typeof updateCartUI === 'function') updateCartUI(); setBackLink(); renderCheckout(); });
+    window.addEventListener('storage', e => { if (e.key === 'firs_cart') renderCheckout(); });
+  </script>
+</body>
+
+</html>

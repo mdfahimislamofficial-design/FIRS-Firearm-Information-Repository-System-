@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRS | Admin</title>
+  <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-wrap {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--bg1);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      overflow-y: auto;
+      z-index: 10;
+    }
+
+    .main {
+      margin-left: 260px;
+      flex: 1;
+    }
+
+    .badge-admin {
+      background: var(--red);
+      padding: 4px 12px;
+      font-family: 'Rajdhani';
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
+      padding: 10px 24px;
+      background: transparent;
+      border: none;
+      color: var(--ash2);
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tab-btn.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
+    .flex-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .user-dropdown {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 14px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 100%;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      min-width: 160px;
+      z-index: 50;
+    }
+
+    .user-dropdown:hover .dropdown-menu {
+      display: block;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 10px 16px;
+      color: var(--ash);
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      text-decoration: none;
+    }
+
+    .dropdown-menu a:hover {
+      background: var(--bg3);
+      color: var(--white);
+    }
+
+    .action-btn {
+      padding: 4px 12px;
+      font-family: 'Rajdhani';
+      font-size: 11px;
+      margin-right: 4px;
+      cursor: pointer;
+      border: none;
+    }
+
+    .approve-btn {
+      background: rgba(34, 160, 90, 0.2);
+      border: 1px solid rgba(34, 160, 90, 0.4);
+      color: var(--green);
+    }
+
+    .reject-btn {
+      background: rgba(200, 33, 58, 0.2);
+      border: 1px solid var(--border-r);
+      color: var(--red);
+    }
+
+    .block-btn {
+      background: rgba(200, 160, 32, 0.2);
+      border: 1px solid rgba(200, 160, 32, 0.4);
+      color: var(--gold);
+    }
+
+    .status-badge {
+      padding: 4px 10px;
+      font-family: 'Rajdhani';
+      font-size: 10px;
+      display: inline-block;
+    }
+
+    .status-pending {
+      background: rgba(200, 160, 32, 0.15);
+      border: 1px solid rgba(200, 160, 32, 0.4);
+      color: var(--gold);
+    }
+
+    .status-approved {
+      background: rgba(34, 160, 90, 0.15);
+      border: 1px solid rgba(34, 160, 90, 0.4);
+      color: var(--green);
+    }
+
+    .status-rejected {
+      background: rgba(200, 33, 58, 0.15);
+      border: 1px solid var(--border-r);
+      color: var(--red);
+    }
+
+    .status-blocked {
+      background: rgba(200, 33, 58, 0.1);
+      border: 1px solid var(--border-r);
+      color: var(--red-b);
+    }
+
+    .restricted-badge {
+      padding: 4px 10px;
+      font-family: 'Rajdhani';
+      font-size: 10px;
+      display: inline-block;
+      border: 1px solid transparent;
+    }
+
+    .restricted-badge.open {
+      background: rgba(34, 160, 90, 0.15);
+      border-color: rgba(34, 160, 90, 0.4);
+      color: var(--green-b);
+    }
+
+    .restricted-badge.restricted {
+      background: rgba(200, 160, 32, 0.2);
+      border-color: rgba(200, 160, 32, 0.4);
+      color: var(--gold-b);
+    }
+
+    .crime-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .bar-item {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+
+    .bar-fill {
+      height: 6px;
+      background: var(--red);
+      width: 0%;
+      transition: width .3s;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="admin-wrap">
+    <div class="sidebar">
+      <a href="index.html" class="logo"
+        style="padding:28px 24px; border-bottom:1px solid var(--border); display:block; text-decoration:none;">F<span>I</span>RS
+        <div style="font-size:9px;letter-spacing:2px;color:var(--ash2);">ADMIN v2.0</div>
+      </a>
+      <div style="padding:20px 0;">
+        <div class="nav-item active" data-tab="overview"><img src="./resources/icons/icons_bar.png" alt="overview"
+            width="16" style="margin-right:8px;"> Overview</div>
+        <div class="nav-item" data-tab="users"><img src="./resources/icons/icons_people.png" alt="users" width="16"
+            style="margin-right:8px;"> Users</div>
+        <div class="nav-item" data-tab="orders"><img src="./resources/icons/icons_box.png" alt="orders" width="16"
+            style="margin-right:8px;"> Orders</div>
+        <div class="nav-item" data-tab="listings"><img src="./resources/icons/icons_handgun.png" alt="listings"
+            width="16" style="margin-right:8px;"> Listings</div>
+        <div class="nav-item" data-tab="dealers"><img src="./resources/icons/icons_chain.png" alt="dealers" width="16"
+            style="margin-right:8px;"> Dealers</div>
+        <div class="nav-item" data-tab="crime"><img src="./resources/icons/icons_siren.png" alt="crime" width="16"
+            style="margin-right:8px;"> Crime Report</div>
+        <div class="nav-item" data-tab="reports"><img src="./resources/icons/icons_barup.png" alt="reports" width="16"
+            style="margin-right:8px;"> Reports</div>
+      </div>
+      <div style="margin-top:auto;border-top:1px solid var(--border);padding:20px 24px;">
+        <div class="flex-between"><span><img src="./resources/icons/icons_people.png" alt="admin" width="16">
+            SuperAdmin</span><span class="status-badge status-approved">Root</span></div>
+        <div style="font-size:11px;color:var(--ash2);margin-top:6px;">Last login: <span id="lastLoginDisplay"></span>
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title">COMMAND CENTER</div>
+        <div class="topbar-end" style="display: flex; align-items: center; gap: 16px;">
+          <span class="badge-admin">FULL PLATFORM CONTROL</span>
+          <div class="user-dropdown" id="adminDropdown">
+            <div
+              style="width:28px; height:28px; background:var(--red); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px;"
+              id="adminInitials">SA</div>
+            <span style="font-family:'Rajdhani'; font-size:13px;">SuperAdmin</span>
+            <div class="dropdown-menu">
+              <a href="user_profile.html">My Profile</a>
+              <a href="order_history.html">Order History</a>
+              <a href="#" onclick="logout(); return false;">Sign Out</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="content" style="padding:28px 32px;">
+        <!-- OVERVIEW PANEL -->
+        <div id="overview-panel" class="panel active">
+          <div class="stats-grid" id="overviewStats"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <div class="table-card">
+              <div class="table-card-header">
+                <div class="table-card-title">Recent Orders</div>
+              </div>
+              <div id="recentOrdersOverview"></div>
+            </div>
+            <div class="table-card">
+              <div class="table-card-header">
+                <div class="table-card-title">Pending Approvals</div>
+              </div>
+              <div id="pendingApprovalsOverview"></div>
+            </div>
+          </div>
+        </div>
+        <!-- USERS PANEL -->
+        <div id="users-panel" class="panel">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div>
+              <h3 style="font-family:'Bebas Neue';">ACTIVE USERS</h3>
+              <table class="data-table" id="activeUsersTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="activeUsersBody"></tbody>
+              </table>
+            </div>
+            <div>
+              <h3 style="font-family:'Bebas Neue';">BLOCKED USERS</h3>
+              <table class="data-table" id="blockedUsersTable">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="blockedUsersBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!-- ORDERS PANEL -->
+        <div id="orders-panel" class="panel">
+          <div class="flex-between">
+            <h3 style="font-family:'Bebas Neue';">ALL ORDERS</h3>
+          </div>
+          <table class="data-table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersTableBody"></tbody>
+          </table>
+        </div>
+        <!-- LISTINGS PANEL -->
+        <div id="listings-panel" class="panel">
+          <div class="flex-between">
+            <h3 style="font-family:'Bebas Neue';">PRODUCT LISTINGS</h3><button class="btn-sm btn-sm-gold"
+              id="resetCatalogBtn">Reset to Default</button>
+          </div>
+          <p style="color:var(--ash2); margin-bottom:16px;">Toggle restricted status or remove products. Changes are
+            saved.</p>
+          <table class="data-table" id="listingsTable">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Qty</th>
+                <th>Restricted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="listingsTableBody"></tbody>
+          </table>
+        </div>
+        <!-- DEALERS PANEL -->
+        <div id="dealers-panel" class="panel">
+          <div class="flex-between">
+            <h3 style="font-family:'Bebas Neue';">LICENSED DEALERS</h3>
+          </div>
+          <table class="data-table" id="dealersTable">
+            <thead>
+              <tr>
+                <th>Business</th>
+                <th>Email</th>
+                <th>FFL</th>
+                <th>Country</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="dealersTableBody"></tbody>
+          </table>
+        </div>
+        <!-- CRIME REPORT PANEL -->
+        <div id="crime-panel" class="panel">
+          <h3 style="font-family:'Bebas Neue';"><img src="./resources/icons/icons_search.png" alt="search" width="20">
+            FIREARM CRIME INTELLIGENCE</h3>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:24px;">
+            <div class="crime-card">
+              <h4 style="font-family:'Rajdhani'; margin-bottom:16px;">Top Calibers Traced</h4>
+              <div class="bar-item"><span>9mm</span><span>47%</span></div>
+              <div class="bar-fill" style="width:47%;"></div>
+              <div class="bar-item"><span>.45 ACP</span><span>22%</span></div>
+              <div class="bar-fill" style="width:22%;"></div>
+              <div class="bar-item"><span>.40 S&W</span><span>15%</span></div>
+              <div class="bar-fill" style="width:15%;"></div>
+              <div class="bar-item"><span>.357 Mag</span><span>10%</span></div>
+              <div class="bar-fill" style="width:10%;"></div>
+            </div>
+            <div class="crime-card">
+              <h4 style="font-family:'Rajdhani'; margin-bottom:16px;">Top Models Recovered</h4>
+              <ul style="list-style:none; padding:0;">
+                <li style="padding:8px 0; border-bottom:1px solid var(--border);">Glock 19 – 214 units</li>
+                <li style="padding:8px 0; border-bottom:1px solid var(--border);">Sig Sauer P320 – 98 units</li>
+                <li style="padding:8px 0; border-bottom:1px solid var(--border);">AR-15 Variant – 156 units</li>
+                <li style="padding:8px 0;">S&W M&P Shield – 67 units</li>
+              </ul>
+            </div>
+            <div class="crime-card">
+              <h4 style="font-family:'Rajdhani'; margin-bottom:16px;">Regional Hotspots</h4>
+              <p>TX, FL, GA account for 35% of traced firearms.</p><button class="btn-sm btn-sm-gold"
+                style="margin-top:16px;" id="generateCrimeReportBtn">Generate Regional Report (CSV)</button>
+            </div>
+            <div class="crime-card">
+              <h4 style="font-family:'Rajdhani'; margin-bottom:16px;">Mitigation Actions</h4>
+              <p>Enhanced background checks active. Compliance sweeps scheduled.</p><button class="btn-sm btn-approve"
+                style="margin-top:16px;" id="initiateSweepBtn">Initiate Sweep</button>
+            </div>
+          </div>
+        </div>
+        <!-- REPORTS PANEL -->
+        <div id="reports-panel" class="panel">
+          <h3 style="font-family:'Bebas Neue';">PLATFORM REPORTS</h3>
+          <div class="stats-grid" style="margin-bottom:20px;">
+            <div class="stat-card">
+              <div class="stat-label">TOTAL REVENUE</div>
+              <div class="stat-value" id="totalRevenue">$0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">COMPLETED ORDERS</div>
+              <div class="stat-value" id="completedOrders">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">AVG ORDER VALUE</div>
+              <div class="stat-value" id="avgOrderValue">$0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">ACTIVE USERS</div>
+              <div class="stat-value" id="activeUsersCount">0</div>
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+            <div class="table-card">
+              <div class="table-card-header">
+                <div class="table-card-title">Revenue by Month</div>
+              </div>
+              <div id="revenueChart" style="padding:16px;">
+                <div class="bar-item"><span>Jan</span><span>$12.4K</span></div>
+                <div class="bar-fill" style="width:40%;"></div>
+                <div class="bar-item"><span>Feb</span><span>$18.2K</span></div>
+                <div class="bar-fill" style="width:58%;"></div>
+                <div class="bar-item"><span>Mar</span><span>$22.7K</span></div>
+                <div class="bar-fill" style="width:72%;"></div>
+                <div class="bar-item"><span>Apr</span><span>$15.9K</span></div>
+                <div class="bar-fill" style="width:51%;"></div>
+              </div>
+            </div>
+            <div class="table-card">
+              <div class="table-card-header">
+                <div class="table-card-title">Top Selling Products</div>
+              </div>
+              <div id="topProductsList" style="padding:16px;"></div>
+            </div>
+          </div>
+          <button class="btn-red" style="margin-top:24px;" id="exportAdminReportBtn">Export Full Report (CSV)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script>
+    (function () {
+      const currentUser = getCurrentUser();
+      if (!currentUser || currentUser.role !== 'admin') { window.location.href = 'auth_page.html'; return; }
+      document.getElementById('adminInitials').textContent = currentUser.name.split(' ').map(n => n[0]).join('').toUpperCase();
+      const now = new Date();
+      document.getElementById('lastLoginDisplay').textContent = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+      let allUsers = [];
+      let editableCatalog = getMasterInventory();
+      let cachedOrders = [];
+      const BLOCKED_STORAGE_KEY = 'firs_blocked_users';
+
+      function getBlockedMap() { return JSON.parse(localStorage.getItem(BLOCKED_STORAGE_KEY) || '{}'); }
+      function setBlockedMap(map) { localStorage.setItem(BLOCKED_STORAGE_KEY, JSON.stringify(map)); }
+
+      async function fetchUsers() {
+        try {
+          const res = await fetch(`${API_BASE}/users`);
+          if (!res.ok) throw new Error('Failed to fetch users');
+          const users = await res.json();
+          const blockedMap = getBlockedMap();
+          allUsers = users.map(u => ({ ...u, blocked: blockedMap[u.email] || false }));
+        } catch (e) {
+          console.error('Error fetching users:', e);
+          const saved = localStorage.getItem('firs_all_users');
+          if (saved) allUsers = JSON.parse(saved);
+        }
+        localStorage.setItem('firs_all_users', JSON.stringify(allUsers));
+      }
+
+      function saveUsers(users) {
+        allUsers = users;
+        localStorage.setItem('firs_all_users', JSON.stringify(users));
+        const blockedMap = {};
+        users.forEach(u => { if (u.blocked) blockedMap[u.email] = true; });
+        setBlockedMap(blockedMap);
+      }
+
+      async function getAllOrders() {
+        try { const res = await fetch(`${API_BASE}/orders`); if (!res.ok) throw new Error('Failed'); return await res.json(); }
+        catch (e) { console.error(e); return []; }
+      }
+      async function refreshOrders() { cachedOrders = await getAllOrders(); }
+      function saveCatalog() { saveMasterInventory(editableCatalog); }
+
+      window.updateOrderStatus = async function (orderId, newStatus) {
+        const order = cachedOrders.find(o => o.id == orderId);
+        if (order) {
+          order.status = newStatus;
+          let local = JSON.parse(localStorage.getItem('firs_orders_backup') || '[]');
+          const idx = local.findIndex(o => o.id == orderId);
+          if (idx >= 0) local[idx] = order; else local.push(order);
+          localStorage.setItem('firs_orders_backup', JSON.stringify(local));
+        }
+        await renderOverview();
+        if (panels.orders.classList.contains('active')) await renderOrders();
+      };
+
+      window.blockUser = function (email) {
+        const user = allUsers.find(u => u.email === email);
+        if (user) { user.blocked = true; saveUsers(allUsers); renderUsers(); }
+      };
+      window.unblockUser = function (email) {
+        const user = allUsers.find(u => u.email === email);
+        if (user) { user.blocked = false; saveUsers(allUsers); renderUsers(); }
+      };
+
+      window.resetProductCatalog = function () {
+        if (typeof resetMasterInventoryToDefault === 'function') {
+          resetMasterInventoryToDefault();
+          editableCatalog = getMasterInventory();
+        } else {
+          editableCatalog = JSON.parse(JSON.stringify(productCatalog));
+          editableCatalog.forEach(p => p.qty = 10);
+          saveCatalog();
+        }
+        renderListings();
+        alert('Catalog reset to default.');
+      };
+
+      window.toggleRestricted = function (productId) {
+        const p = editableCatalog.find(p => p.id === productId);
+        if (p) { p.restricted = !p.restricted; saveCatalog(); renderListings(); }
+      };
+      window.removeProduct = function (productId) {
+        editableCatalog = editableCatalog.filter(p => p.id !== productId);
+        saveCatalog(); renderListings();
+        if (panels.overview.classList.contains('active')) renderOverview();
+      };
+
+      document.addEventListener('click', function (e) {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        if (btn.classList.contains('approve-btn')) { const id = btn.getAttribute('data-order-id'); if (id) updateOrderStatus(id, 'Approved'); }
+        else if (btn.classList.contains('reject-btn')) { const id = btn.getAttribute('data-order-id'); if (id) updateOrderStatus(id, 'Rejected'); }
+        else if (btn.classList.contains('block-btn')) { const email = btn.getAttribute('data-email'); if (email) blockUser(email); }
+        else if (btn.classList.contains('unblock-btn')) { const email = btn.getAttribute('data-email'); if (email) unblockUser(email); }
+        else if (btn.classList.contains('toggle-restrict-btn')) { const id = btn.getAttribute('data-product-id'); if (id) toggleRestricted(id); }
+        else if (btn.classList.contains('remove-product-btn')) { const id = btn.getAttribute('data-product-id'); if (id) removeProduct(id); }
+        else if (btn.id === 'resetCatalogBtn') resetProductCatalog();
+        else if (btn.id === 'generateCrimeReportBtn') generateCrimeReport();
+        else if (btn.id === 'initiateSweepBtn') alert('Compliance sweep initiated.');
+        else if (btn.id === 'exportAdminReportBtn') exportAdminReport();
+      });
+
+      const navItems = document.querySelectorAll('.nav-item');
+      const panels = {
+        overview: document.getElementById('overview-panel'), users: document.getElementById('users-panel'), orders: document.getElementById('orders-panel'),
+        listings: document.getElementById('listings-panel'), dealers: document.getElementById('dealers-panel'), crime: document.getElementById('crime-panel'), reports: document.getElementById('reports-panel')
+      };
+      function activateTab(tabId) {
+        Object.values(panels).forEach(p => p.classList.remove('active'));
+        panels[tabId].classList.add('active');
+        navItems.forEach(n => n.classList.remove('active'));
+        document.querySelector(`.nav-item[data-tab="${tabId}"]`).classList.add('active');
+        if (tabId === 'overview') renderOverview();
+        else if (tabId === 'users') renderUsers();
+        else if (tabId === 'orders') renderOrders();
+        else if (tabId === 'listings') renderListings();
+        else if (tabId === 'dealers') renderDealers();
+        else if (tabId === 'reports') renderReports();
+      }
+      navItems.forEach(item => item.addEventListener('click', () => { const tab = item.getAttribute('data-tab'); if (tab && panels[tab]) activateTab(tab); }));
+
+      async function renderOverview() {
+        await refreshOrders();
+        const orders = cachedOrders;
+        const revenue = orders.filter(o => o.status === 'Approved' || o.status === 'Delivered').reduce((s, o) => s + o.totalAmount, 0);
+        const pending = orders.filter(o => o.status === 'Pending' || o.status === 'Processing').length;
+        const active = allUsers.filter(u => !u.blocked).length;
+        document.getElementById('overviewStats').innerHTML = `
+        <div class="stat-card green"><div class="stat-label">ACTIVE USERS</div><div class="stat-value">${active}</div></div>
+        <div class="stat-card gold"><div class="stat-label">TOTAL ORDERS</div><div class="stat-value">${orders.length}</div></div>
+        <div class="stat-card red"><div class="stat-label">PENDING APPROVAL</div><div class="stat-value">${pending}</div></div>
+        <div class="stat-card blue"><div class="stat-label">REVENUE</div><div class="stat-value">$${revenue.toLocaleString()}</div></div>
+      `;
+        const recent = orders.filter(o => o.status !== 'Pending' && o.status !== 'Processing').slice(-5).reverse();
+        let html = '<table class="data-table"><tbody>';
+        recent.forEach(o => html += `<tr><td>#${o.id}</td><td>${o.user?.email || 'N/A'}</td><td>$${o.totalAmount}</td><td><span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span></td></tr>`);
+        html += '</tbody></table>';
+        document.getElementById('recentOrdersOverview').innerHTML = html || '<p>No recent orders</p>';
+        const pendingOrders = orders.filter(o => o.status === 'Pending' || o.status === 'Processing');
+        let pHtml = '<table class="data-table"><tbody>';
+        pendingOrders.forEach(o => pHtml += `<tr><td>#${o.id}</td><td>${o.user?.email || 'N/A'}</td><td>$${o.totalAmount}</td><td><button class="action-btn approve-btn" data-order-id="${o.id}">Approve</button><button class="action-btn reject-btn" data-order-id="${o.id}">Reject</button></td></tr>`);
+        pHtml += '</tbody></table>';
+        document.getElementById('pendingApprovalsOverview').innerHTML = pHtml || '<p>No pending approvals</p>';
+      }
+
+      function renderUsers() {
+        const active = allUsers.filter(u => !u.blocked), blocked = allUsers.filter(u => u.blocked);
+        document.getElementById('activeUsersBody').innerHTML = active.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td><button class="action-btn block-btn" data-email="${u.email}">Block</button></td></tr>`).join('');
+        document.getElementById('blockedUsersBody').innerHTML = blocked.map(u => `<tr><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td><button class="action-btn approve-btn unblock-btn" data-email="${u.email}">Unblock</button></td></tr>`).join('');
+      }
+
+      async function renderOrders() {
+        await refreshOrders();
+        const tbody = document.getElementById('ordersTableBody');
+        tbody.innerHTML = cachedOrders.map(o => {
+          const items = o.items.map(i => `${i.quantity}x ${i.product?.name || 'Unknown'}`).join(', ');
+          return `<tr><td>#${o.id}</td><td>${o.user?.email || 'N/A'}</td><td>${new Date(o.orderDate).toLocaleDateString()}</td><td>${items}</td><td>$${o.totalAmount}</td><td><span class="status-badge status-${o.status.toLowerCase()}">${o.status}</span></td><td>${o.status === 'Pending' || o.status === 'Processing' ? `<button class="action-btn approve-btn" data-order-id="${o.id}">Approve</button><button class="action-btn reject-btn" data-order-id="${o.id}">Reject</button>` : '—'}</td></tr>`;
+        }).join('');
+      }
+
+      function renderListings() {
+        const tbody = document.getElementById('listingsTableBody');
+        tbody.innerHTML = editableCatalog.map(p => `<tr><td>${p.id.toUpperCase()}</td><td>${p.name}</td><td>${p.category}</td><td>$${p.price}</td><td>${p.qty || 0}</td><td><span class="restricted-badge ${p.restricted ? 'restricted' : 'open'}">${p.restricted ? 'Restricted' : 'Open'}</span></td><td><button class="action-btn toggle-restrict-btn" data-product-id="${p.id}">Toggle</button><button class="action-btn reject-btn remove-product-btn" data-product-id="${p.id}">Remove</button></td></tr>`).join('');
+      }
+
+      function renderDealers() {
+        const dealers = allUsers.filter(u => u.role === 'dealer');
+        document.getElementById('dealersTableBody').innerHTML = dealers.map(d => `<tr><td>${d.name}</td><td>${d.email}</td><td>FFL-${d.email.split('@')[0].toUpperCase()}</td><td>United States</td><td><span class="status-badge ${d.blocked ? 'status-blocked' : 'status-approved'}">${d.blocked ? 'Blocked' : 'Active'}</span></td></tr>`).join('');
+      }
+
+      async function renderReports() {
+        await refreshOrders();
+        const orders = cachedOrders;
+        const revenue = orders.filter(o => o.status === 'Approved' || o.status === 'Delivered').reduce((s, o) => s + o.totalAmount, 0);
+        const completed = orders.filter(o => o.status === 'Delivered').length;
+        const avg = completed ? (revenue / completed).toFixed(0) : 0;
+        document.getElementById('totalRevenue').innerText = '$' + revenue.toLocaleString();
+        document.getElementById('completedOrders').innerText = completed;
+        document.getElementById('avgOrderValue').innerText = '$' + avg;
+        document.getElementById('activeUsersCount').innerText = allUsers.filter(u => !u.blocked).length;
+        const sales = {};
+        orders.forEach(o => o.items.forEach(i => { const n = i.product?.name || 'Unknown'; sales[n] = (sales[n] || 0) + i.quantity; }));
+        const sorted = Object.entries(sales).sort((a, b) => b[1] - a[1]).slice(0, 5);
+        let list = '<ul style="list-style:none;padding:0;">';
+        sorted.forEach(([n, q]) => list += `<li style="padding:8px 0;border-bottom:1px solid var(--border);">${n} – ${q} sold</li>`);
+        list += '</ul>';
+        document.getElementById('topProductsList').innerHTML = list || '<p>No sales data</p>';
+      }
+
+      window.generateCrimeReport = function () {
+        const csv = "Date,Time,Location,Firearm Used,Caliber,Shells Fired,Suspect(s),Eye Witness(es),Case Status,Notes\n" +
+          "2026-03-15,22:30,Houston TX,Glock 19,9mm,12,Marcus Webb,Two neighbors,Open,Recovered\n" +
+          "2026-03-18,01:15,Miami FL,Sig P320,.45 ACP,8,Unknown,None,Closed,Ballistics matched\n";
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'crime_regional_report.csv'; a.click();
+      };
+      window.exportAdminReport = function () {
+        let csv = "Order ID,User Email,Date,Items,Total,Status\n";
+        cachedOrders.forEach(o => {
+          const items = o.items.map(i => `${i.quantity}x ${i.product?.name || 'Unknown'}`).join('; ');
+          csv += `"${o.id}","${o.user?.email || ''}","${o.orderDate}","${items}",${o.totalAmount},"${o.status}"\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'platform_full_report.csv'; a.click();
+      };
+
+      (async () => {
+        await fetchUsers();
+        await refreshOrders();
+        renderOverview();
+        if (!allUsers.length) {
+          allUsers = [
+            { name: 'SuperAdmin', email: 'admin@firs.com', role: 'admin', blocked: false },
+            { name: 'Jason M.', email: 'customer@firs.com', role: 'customer', blocked: false },
+            { name: 'Lt. James Holloway', email: 'gov@firs.com', role: 'govt', blocked: false },
+            { name: 'Ridge Arms LLC', email: 'dealer@firs.com', role: 'dealer', blocked: false }
+          ];
+          saveUsers(allUsers);
+        }
+      })();
+    })();
+  </script>
+
+  <!-- localStorage.removeItem('firs_blocked_users'); -->
+
+</body>
+
+</html>

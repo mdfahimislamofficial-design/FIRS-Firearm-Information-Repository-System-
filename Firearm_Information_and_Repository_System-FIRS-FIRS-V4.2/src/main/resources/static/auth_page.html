@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRS | Access</title>
+  <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+    }
+
+    .auth-left {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(145deg, #07070A 0%, #100810 50%, #16080C 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 48px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+    }
+
+    .auth-left-grid {
+      position: absolute;
+      inset: 0;
+      opacity: .07;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 50px 50px;
+    }
+
+    .auth-left-glow {
+      position: absolute;
+      bottom: -100px;
+      left: -100px;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(200, 33, 58, 0.18) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .auth-left-top {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-left-mid {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .auth-headline {
+      font-family: 'Bebas Neue';
+      font-size: clamp(42px, 5vw, 72px);
+      line-height: .95;
+      letter-spacing: 2px;
+      margin-top: 16px;
+    }
+
+    .auth-headline span {
+      color: var(--red);
+    }
+
+    .auth-tagline {
+      font-size: 15px;
+      color: var(--ash);
+      margin-top: 20px;
+      line-height: 1.7;
+      max-width: 380px;
+      font-weight: 300;
+    }
+
+    .auth-tiers {
+      margin-top: 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-right: -10px;
+    }
+
+    .tier-pill {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    .tier-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg3);
+      flex-shrink: 0;
+    }
+
+    .tier-icon img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tier-name {
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+
+    .tier-access {
+      font-size: 11px;
+      color: var(--ash2);
+    }
+
+    .tier-badge {
+      margin-left: auto;
+      font-family: 'Rajdhani';
+      font-size: 9px;
+      letter-spacing: 2px;
+      padding: 3px 10px;
+      text-transform: uppercase;
+    }
+
+    .tier-badge.open {
+      background: rgba(34, 160, 90, 0.15);
+      color: var(--green-b);
+      border: 1px solid rgba(34, 160, 90, 0.3);
+    }
+
+    .tier-badge.restricted {
+      background: rgba(200, 33, 58, 0.1);
+      color: var(--red-b);
+      border: 1px solid var(--border-r);
+    }
+
+    .auth-left-bottom {
+      position: relative;
+      z-index: 1;
+    }
+
+    .auth-footer-text {
+      font-size: 11px;
+      color: var(--ash2);
+      line-height: 1.6;
+    }
+
+    .auth-footer-text a {
+      color: var(--ash);
+      text-decoration: none;
+    }
+
+    .auth-divider {
+      position: absolute;
+      right: -1px;
+      top: 0;
+      bottom: 0;
+      width: 60px;
+      background: var(--bg0);
+      clip-path: polygon(60% 0%, 100% 0%, 100% 100%, 0% 100%);
+      z-index: 2;
+    }
+
+    .auth-right {
+      background: var(--bg0);
+      display: flex;
+      flex-direction: column;
+      padding: 60px 70px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 40px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px 0;
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ash2);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+    }
+
+    .tab-btn.active {
+      color: var(--red);
+      border-bottom-color: var(--red);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--ash);
+    }
+
+    .form-panel {
+      display: none;
+    }
+
+    .form-panel.active {
+      display: block;
+    }
+
+    .form-title {
+      font-family: 'Bebas Neue';
+      font-size: 36px;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      font-size: 13px;
+      color: var(--ash2);
+      margin-bottom: 32px;
+    }
+
+    .role-label {
+      font-family: 'Rajdhani';
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ash2);
+      margin-bottom: 12px;
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .role-card {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: var(--bg1);
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .role-card:hover {
+      border-color: var(--ash3);
+    }
+
+    .role-card.selected {
+      border-color: var(--red);
+      background: rgba(200, 33, 58, 0.08);
+    }
+
+    .role-card input {
+      display: none;
+    }
+
+    .role-card-name {
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .role-card-desc {
+      font-size: 11px;
+      color: var(--ash2);
+    }
+
+    .role-card-icon {
+      margin-bottom: 4px;
+    }
+
+    .role-card-icon img {
+      width: 20px;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-family: 'Rajdhani';
+      font-size: 11px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--ash2);
+      margin-bottom: 8px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg1);
+      border: 1px solid var(--border);
+      color: var(--white);
+      font-family: 'DM Sans';
+      font-size: 14px;
+      outline: none;
+      transition: border .2s;
+      -webkit-appearance: none;
+    }
+
+    .field input::placeholder {
+      color: var(--ash2);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--red);
+    }
+
+    .field select {
+      color: var(--ash);
+      background-color: var(--bg1);
+    }
+
+    .field select option {
+      background: var(--bg1);
+      color: var(--white);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .upload-zone {
+      border: 1px dashed var(--ash3);
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border .2s;
+      margin-bottom: 20px;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--red);
+    }
+
+    .upload-zone.drag-over {
+      border-color: var(--red);
+      background: rgba(200, 33, 58, 0.05);
+    }
+
+    .upload-icon {
+      margin-bottom: 8px;
+    }
+
+    .upload-icon img {
+      width: 24px;
+    }
+
+    .upload-text {
+      font-family: 'Rajdhani';
+      font-size: 12px;
+      letter-spacing: 1px;
+      color: var(--ash2);
+    }
+
+    .upload-text span {
+      color: var(--red);
+    }
+
+    .file-name {
+      font-size: 11px;
+      color: var(--ash);
+      margin-top: 8px;
+      word-break: break-all;
+    }
+
+    .notice {
+      padding: 12px 16px;
+      background: rgba(200, 33, 58, 0.08);
+      border: 1px solid var(--border-r);
+      font-size: 12px;
+      color: var(--ash);
+      line-height: 1.6;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .notice img {
+      width: 16px;
+      margin-top: 2px;
+    }
+
+    .notice-green {
+      background: rgba(34, 160, 90, 0.08);
+      border-color: rgba(34, 160, 90, 0.3);
+    }
+
+    .notice-green img {
+      filter: brightness(0) saturate(100%) invert(58%) sepia(77%) saturate(439%) hue-rotate(86deg) brightness(92%) contrast(88%);
+    }
+
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .or-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .or-text {
+      font-family: 'Rajdhani';
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--ash2);
+      text-transform: uppercase;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--red);
+      border: none;
+      color: var(--white);
+      font-family: 'Rajdhani';
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 0 24px rgba(200, 33, 58, 0.3);
+      margin-bottom: 16px;
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-submit:disabled:hover {
+      background: var(--red);
+      box-shadow: 0 0 24px rgba(200, 33, 58, 0.3);
+    }
+
+    .btn-submit:hover {
+      background: var(--red-b);
+      box-shadow: 0 0 40px rgba(200, 33, 58, 0.5);
+    }
+
+    .form-footer {
+      font-size: 12px;
+      color: var(--ash2);
+      text-align: center;
+    }
+
+    .form-footer a {
+      color: var(--ash);
+      text-decoration: none;
+    }
+
+    .pw-strength {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .pw-bar {
+      flex: 1;
+      height: 3px;
+      background: var(--ash3);
+      transition: background .3s;
+    }
+
+    .pw-bar.weak {
+      background: #E84A4A;
+    }
+
+    .pw-bar.medium {
+      background: #E8A53A;
+    }
+
+    .pw-bar.strong {
+      background: var(--green-b);
+    }
+
+    .success-panel {
+      display: none;
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .success-icon {
+      margin-bottom: 20px;
+      animation: bounce .6s ease;
+    }
+
+    .success-icon img {
+      width: 64px;
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      50% {
+        transform: scale(1.15)
+      }
+    }
+
+    .success-title {
+      font-family: 'Bebas Neue';
+      font-size: 40px;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+
+    .success-sub {
+      font-size: 14px;
+      color: var(--ash);
+      line-height: 1.7;
+      max-width: 360px;
+      margin: 0 auto 32px;
+    }
+
+    .pending-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      margin-bottom: 32px;
+    }
+
+    .pending-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg1);
+      border: 1px solid var(--border);
+    }
+
+    .pending-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .pending-dot.done {
+      background: var(--green-b);
+    }
+
+    .pending-dot.active {
+      background: var(--red);
+      animation: pulse 2s infinite;
+    }
+
+    .pending-dot.wait {
+      background: var(--ash3);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .4
+      }
+    }
+
+    .pending-text {
+      font-family: 'Rajdhani';
+      font-size: 13px;
+      letter-spacing: .5px;
+      color: var(--ash);
+    }
+
+    .error-message {
+      color: var(--red-b);
+      font-size: 11px;
+      margin-top: 5px;
+      font-family: 'Rajdhani';
+      letter-spacing: 0.5px;
+    }
+
+    .field input.error {
+      border-color: var(--red-b) !important;
+    }
+
+    @media(max-width:800px) {
+      .auth-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .auth-left {
+        display: none;
+      }
+
+      .auth-right {
+        padding: 40px 28px;
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="auth-wrap">
+    <div class="auth-left">
+      <div class="auth-left-grid"></div>
+      <div class="auth-left-glow"></div>
+      <div class="auth-left-top"><a href="index.html" class="logo">F<span>I</span>RS</a></div>
+      <div class="auth-left-mid">
+        <div
+          style="font-family:'Rajdhani';font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--red);display:flex;align-items:center;gap:10px;">
+          <span style="display:block;width:24px;height:1px;background:var(--red);"></span>Access Portal</div>
+        <div class="auth-headline">YOUR<br><span>TIER.</span><br>YOUR ACCESS.</div>
+        <div class="auth-tagline">Four distinct account levels. Every credential verified. Every transaction compliant
+          with federal firearms law.</div>
+        <div class="auth-tiers">
+          <div class="tier-pill">
+            <div class="tier-icon"><img src="./resources/icons/icons_people.png" alt="customer"></div>
+            <div>
+              <div class="tier-name">Customer</div>
+              <div class="tier-access">Handguns & Revolvers</div>
+            </div>
+            <div class="tier-badge open">Open</div>
+          </div>
+          <div class="tier-pill">
+            <div class="tier-icon"><img src="./resources/icons/icons_handgun.png" alt="govt"></div>
+            <div>
+              <div class="tier-name">Govt. / Militia</div>
+              <div class="tier-access">Full Catalog Access</div>
+            </div>
+            <div class="tier-badge restricted">Verified</div>
+          </div>
+          <div class="tier-pill">
+            <div class="tier-icon"><img src="./resources/icons/icons_chain.png" alt="dealer"></div>
+            <div>
+              <div class="tier-name">Licensed Dealer</div>
+              <div class="tier-access">Inventory + Bulk Orders</div>
+            </div>
+            <div class="tier-badge restricted">FFL Required</div>
+          </div>
+          <div class="tier-pill">
+            <div class="tier-icon"><img src="./resources/icons/icons_settings.png" alt="admin"></div>
+            <div>
+              <div class="tier-name">Administrator</div>
+              <div class="tier-access">Full Platform Control</div>
+            </div>
+            <div class="tier-badge restricted">Internal</div>
+          </div>
+        </div>
+      </div>
+      <div class="auth-left-bottom">
+        <div class="auth-footer-text">ATF Compliant · FFL Verified · Encrypted Transactions<br><a href="#">Privacy
+            Policy</a> · <a href="#">Terms of Service</a> · <a href="#">Compliance Guide</a></div>
+      </div>
+      <div class="auth-divider"></div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-tabs">
+        <button class="tab-btn active" onclick="switchTab('login',this)">Sign In</button>
+        <button class="tab-btn" onclick="switchTab('register',this)">Register</button>
+      </div>
+      <div class="form-panel active" id="panel-login">
+        <div class="form-title">WELCOME BACK</div>
+        <div class="form-subtitle">Sign in to access your account and tier-specific catalog.</div>
+        <div class="notice notice-green"><img src="./resources/icons/icons_tick.png" alt="tick"><span>Secure 256-bit
+            encrypted session. Credentials never stored in plaintext.</span></div>
+        <div class="field"><label>Email Address</label><input type="email" placeholder="your@email.com" id="loginEmail"
+            value="customer@firs.com"></div>
+        <div class="field"><label>Password</label><input type="password" placeholder="••••••••••••" id="loginPassword"
+            value="customer123"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;"><label
+            style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--ash);"><input
+              type="checkbox" style="accent-color:var(--red);width:auto;"> Remember device</label><a href="#"
+            style="font-size:13px;color:var(--red);text-decoration:none;">Forgot password?</a></div>
+        <button class="btn-submit" onclick="handleLogin()">ACCESS ACCOUNT →</button>
+        <div class="form-footer">Don't have an account? <a href="#" onclick="switchTabDirect('register')">Register
+            here</a></div>
+        <div
+          style="margin-top:20px;font-size:11px;color:var(--ash2);border-top:1px solid var(--border);padding-top:16px;">
+          Demo: customer@firs.com / customer123<br>gov@firs.com / gov123 · dealer@firs.com / dealer123 · admin@firs.com
+          / admin123</div>
+      </div>
+      <div class="form-panel" id="panel-register">
+        <div class="form-title">CREATE ACCOUNT</div>
+        <div class="form-subtitle">Select your account type. Higher tiers require credential verification.</div>
+        <div class="role-label">Account Type</div>
+        <div class="role-grid" id="role-grid">
+          <label class="role-card selected" onclick="selectRole(this,'customer')"><input type="radio" name="role"
+              value="customer" checked>
+            <div class="role-card-icon"><img src="./resources/icons/icons_people.png" alt="customer"></div>
+            <div class="role-card-name">Customer</div>
+            <div class="role-card-desc">Handguns & Revolvers</div>
+          </label>
+          <label class="role-card" onclick="selectRole(this,'govt')"><input type="radio" name="role" value="govt">
+            <div class="role-card-icon"><img src="./resources/icons/icons_handgun.png" alt="govt"></div>
+            <div class="role-card-name">GOVT. / Militia</div>
+            <div class="role-card-desc">Full catalog — credential required</div>
+          </label>
+          <label class="role-card" onclick="selectRole(this,'dealer')"><input type="radio" name="role" value="dealer">
+            <div class="role-card-icon"><img src="./resources/icons/icons_chain.png" alt="dealer"></div>
+            <div class="role-card-name">Dealer</div>
+            <div class="role-card-desc">FFL license required</div>
+          </label>
+          <label class="role-card" onclick="selectRole(this,'admin')" style="opacity:.4;pointer-events:none;"><input
+              type="radio" name="role" value="admin" disabled>
+            <div class="role-card-icon"><img src="./resources/icons/icons_settings.png" alt="admin"></div>
+            <div class="role-card-name">Admin</div>
+            <div class="role-card-desc">Internal accounts only</div>
+          </label>
+        </div>
+        <div class="notice" id="role-notice"><img src="./resources/icons/icons_warning.png" alt="warning"><span>Standard
+            background check required for handguns and revolvers. FFL transfer required at point of delivery.</span>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>First Name</label><input type="text" placeholder="John" id="firstName">
+            <div class="error-message" id="firstNameError"></div>
+          </div>
+          <div class="field"><label>Last Name</label><input type="text" placeholder="Smith" id="lastName">
+            <div class="error-message" id="lastNameError"></div>
+          </div>
+        </div>
+        <div class="field"><label>Email Address</label><input type="email" placeholder="your@email.com"
+            id="registerEmail">
+          <div class="error-message" id="emailError"></div>
+        </div>
+        <div class="field"><label>Password</label><input type="password"
+            placeholder="Min. 8 characters, 1 uppercase, 1 number, 1 special" id="pw-input"
+            oninput="checkPw(this.value)">
+          <div class="pw-strength" id="pw-strength">
+            <div class="pw-bar" id="b1"></div>
+            <div class="pw-bar" id="b2"></div>
+            <div class="pw-bar" id="b3"></div>
+            <div class="pw-bar" id="b4"></div>
+          </div>
+          <div class="error-message" id="passwordError"></div>
+        </div>
+        <div id="govt-fields" style="display:none;">
+          <div class="field"><label>Department / Unit</label><input type="text"
+              placeholder="e.g. LAPD, National Guard — 123rd" id="govtDept"></div>
+          <div class="field"><label>Badge / Service Number</label><input type="text" placeholder="Official ID number"
+              id="govtBadge"></div>
+          <div class="upload-zone" id="govtUploadZone" onclick="document.getElementById('govtFileInput').click()">
+            <div class="upload-icon"><img src="./resources/icons/icons_paper.png" alt="upload"></div>
+            <div class="upload-text" id="govtUploadText">Upload official credentials / orders<br><span>Click to browse
+                or drag & drop</span></div>
+            <div class="file-name" id="govtFileName"></div><input type="file" id="govtFileInput" style="display:none;"
+              accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this, 'govt')">
+          </div>
+        </div>
+        <div id="dealer-fields" style="display:none;">
+          <div class="field"><label>FFL License Number</label><input type="text" placeholder="e.g. 1-23-456-07-8X-12345"
+              id="dealerFFL"></div>
+          <div class="field"><label>Business Name</label><input type="text" placeholder="Licensed business name"
+              id="dealerBizName"></div>
+          <div class="field"><label>Country of Operation</label><select id="dealerCountry">
+              <option value="">Select country...</option>
+              <option>United States</option>
+              <option>United Kingdom</option>
+              <option>Canada</option>
+              <option>Australia</option>
+              <option>Germany</option>
+              <option>France</option>
+              <option>India</option>
+              <option>Bangladesh</option>
+            </select></div>
+          <div class="upload-zone" id="dealerUploadZone" onclick="document.getElementById('dealerFileInput').click()">
+            <div class="upload-icon"><img src="./resources/icons/icons_paper.png" alt="upload"></div>
+            <div class="upload-text" id="dealerUploadText">Upload License Copy<br><span>Click to browse or drag &
+                drop</span></div>
+            <div class="file-name" id="dealerFileName"></div><input type="file" id="dealerFileInput"
+              style="display:none;" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this, 'dealer')">
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:28px;"><input type="checkbox"
+            id="agreeTerms" style="accent-color:var(--red);margin-top:3px;flex-shrink:0;"
+            onchange="validateBasicFields()"><span style="font-size:13px;color:var(--ash);line-height:1.5;">I agree to
+            FIRS's <a href="#" style="color:var(--red);">Terms of Service</a>, <a href="#"
+              style="color:var(--red);">Privacy Policy</a>, and confirm I am 21+ years of age.</span></div>
+        <button class="btn-submit" id="registerSubmitBtn" onclick="handleRegister()" disabled>CREATE ACCOUNT →</button>
+        <div class="form-footer">Already registered? <a href="#" onclick="switchTabDirect('login')">Sign in here</a>
+        </div>
+      </div>
+      <div class="success-panel" id="panel-success">
+        <div class="success-icon"><img src="./resources/icons/icons_tick.png" alt="success"></div>
+        <div class="success-title">ACCOUNT CREATED</div>
+        <div class="success-sub" id="success-msg">Your account has been created. You can now sign in and start shopping.
+        </div>
+        <div class="pending-steps" id="pending-steps">
+          <div class="pending-step">
+            <div class="pending-dot done"></div>
+            <div class="pending-text">Account information submitted</div>
+          </div>
+          <div class="pending-step">
+            <div class="pending-dot active"></div>
+            <div class="pending-text">Credential verification in progress</div>
+          </div>
+          <div class="pending-step">
+            <div class="pending-dot wait"></div>
+            <div class="pending-text">Background check pending</div>
+          </div>
+          <div class="pending-step">
+            <div class="pending-dot wait"></div>
+            <div class="pending-text">Account activation</div>
+          </div>
+        </div>
+        <a href="index.html"
+          style="display:inline-block;padding:12px 32px;background:var(--red);color:white;font-family:'Rajdhani';font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;font-size:14px;">←
+          Return to Home</a>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+  <script>
+    function switchTab(tab, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.form-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + tab).classList.add('active');
+      document.getElementById('panel-success').style.display = 'none';
+      document.querySelector('.auth-tabs').style.display = 'flex';
+    }
+    function switchTabDirect(tab) { switchTab(tab, document.querySelectorAll('.tab-btn')[tab === 'login' ? 0 : 1]); }
+    const notices = {
+      customer: 'Standard background check required. You can browse and purchase handguns and revolvers.',
+      govt: '⚠ Government / Militia tier requires official credentials and department verification. Access pending review (24–72 hours).',
+      dealer: '⚠ FFL License verification required. Bulk purchasing and inventory access unlocked after approval.',
+      admin: 'Administrator accounts are issued internally only.'
+    };
+    function selectRole(card, role) {
+      document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      card.querySelector('input[type="radio"]').checked = true;
+      document.getElementById('role-notice').innerHTML = `<img src="./resources/icons/icons_warning.png" alt="warning"><span>${notices[role]}</span>`;
+      document.getElementById('govt-fields').style.display = role === 'govt' ? 'block' : 'none';
+      document.getElementById('dealer-fields').style.display = role === 'dealer' ? 'block' : 'none';
+      validateBasicFields();
+    }
+    function isValidName(n) { return /^[A-Za-zÀ-ÿ\s\-']+$/.test(n); }
+    function isValidEmail(e) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+    function isStrongPassword(p) { return p.length >= 8 && /[A-Z]/.test(p) && /[0-9]/.test(p) && /[!@#$%^&*(),.?":{}|<>]/.test(p); }
+    function validateBasicFields() {
+      const firstName = document.getElementById('firstName'), lastName = document.getElementById('lastName'), email = document.getElementById('registerEmail'), password = document.getElementById('pw-input'), terms = document.getElementById('agreeTerms').checked;
+      let valid = true;
+      const fErr = document.getElementById('firstNameError'), lErr = document.getElementById('lastNameError'), eErr = document.getElementById('emailError'), pErr = document.getElementById('passwordError');
+      if (!firstName.value.trim()) { fErr.textContent = 'First name required.'; firstName.classList.add('error'); valid = false; }
+      else if (!isValidName(firstName.value.trim())) { fErr.textContent = 'Only letters, spaces, hyphens, apostrophes allowed.'; firstName.classList.add('error'); valid = false; }
+      else { fErr.textContent = ''; firstName.classList.remove('error'); }
+      if (!lastName.value.trim()) { lErr.textContent = 'Last name required.'; lastName.classList.add('error'); valid = false; }
+      else if (!isValidName(lastName.value.trim())) { lErr.textContent = 'Only letters, spaces, hyphens, apostrophes allowed.'; lastName.classList.add('error'); valid = false; }
+      else { lErr.textContent = ''; lastName.classList.remove('error'); }
+      if (!email.value.trim()) { eErr.textContent = 'Email required.'; email.classList.add('error'); valid = false; }
+      else if (!isValidEmail(email.value.trim())) { eErr.textContent = 'Enter a valid email address.'; email.classList.add('error'); valid = false; }
+      else { eErr.textContent = ''; email.classList.remove('error'); }
+      if (!password.value) { pErr.textContent = 'Password required.'; password.classList.add('error'); valid = false; }
+      else if (!isStrongPassword(password.value)) { pErr.textContent = '8+ chars, uppercase, number, special.'; password.classList.add('error'); valid = false; }
+      else { pErr.textContent = ''; password.classList.remove('error'); }
+      document.getElementById('registerSubmitBtn').disabled = !(valid && terms);
+      return valid;
+    }
+    function attachValidationListeners() {
+      ['firstName', 'lastName', 'registerEmail', 'pw-input'].forEach(id => document.getElementById(id).addEventListener('input', validateBasicFields));
+      document.getElementById('agreeTerms').addEventListener('change', validateBasicFields);
+    }
+    function handleFileSelect(input, type) {
+      const file = input.files[0], fn = document.getElementById(type + 'FileName'), ut = document.getElementById(type + 'UploadText');
+      if (file) { fn.textContent = `Selected: ${file.name}`; ut.innerHTML = `File ready<br><span>${file.name}</span>`; }
+      else { fn.textContent = ''; ut.innerHTML = type === 'govt' ? 'Upload official credentials / orders<br><span>Click to browse or drag & drop</span>' : 'Upload License Copy<br><span>Click to browse or drag & drop</span>'; }
+    }
+    function setupDragDrop(zoneId, inputId, type) {
+      const zone = document.getElementById(zoneId), input = document.getElementById(inputId);
+      if (!zone) return;
+      zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+      zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag-over'); if (e.dataTransfer.files.length) { input.files = e.dataTransfer.files; handleFileSelect(input, type); } });
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      setupDragDrop('govtUploadZone', 'govtFileInput', 'govt');
+      setupDragDrop('dealerUploadZone', 'dealerFileInput', 'dealer');
+      attachValidationListeners();
+      validateBasicFields();
+    });
+    function checkPw(val) {
+      const bars = [document.getElementById('b1'), document.getElementById('b2'), document.getElementById('b3'), document.getElementById('b4')];
+      bars.forEach(b => b.className = 'pw-bar');
+      let strength = 0;
+      if (val.length >= 8) strength++; if (/[A-Z]/.test(val)) strength++; if (/[0-9]/.test(val)) strength++; if (/[!@#$%^&*(),.?":{}|<>]/.test(val)) strength++;
+      const cls = strength <= 1 ? 'weak' : strength === 2 ? 'medium' : strength === 3 ? 'medium' : 'strong';
+      for (let i = 0; i < strength && i < 4; i++) bars[i].classList.add(cls);
+      validateBasicFields();
+    }
+    function handleLogin() {
+      const email = document.getElementById('loginEmail').value.trim(), password = document.getElementById('loginPassword').value;
+      if (!email || !password) { alert('Please enter email and password.'); return; }
+      if (typeof authenticateAndRedirect === 'function') authenticateAndRedirect(email, password);
+      else alert('Authentication system not loaded.');
+    }
+    async function handleRegister() {
+      if (!validateBasicFields()) { alert('Please correct the errors.'); return; }
+      const firstName = document.getElementById('firstName').value.trim(), lastName = document.getElementById('lastName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim(), password = document.getElementById('pw-input').value;
+      const selectedRole = document.querySelector('input[name="role"]:checked').value;
+      const fullName = firstName + ' ' + lastName;
+      if (selectedRole === 'govt') {
+        if (!document.getElementById('govtDept').value.trim() || !document.getElementById('govtBadge').value.trim()) { alert('Please enter department and badge.'); return; }
+      } else if (selectedRole === 'dealer') {
+        if (!document.getElementById('dealerFFL').value.trim() || !document.getElementById('dealerBizName').value.trim() || !document.getElementById('dealerCountry').value) { alert('Please fill FFL, business name, and country.'); return; }
+      }
+      try {
+        await registerUser({ name: fullName, email, password, role: selectedRole });
+        const defaultUsers = [{ name: 'SuperAdmin', email: 'admin@firs.com', role: 'admin', blocked: false }, { name: 'Jason M.', email: 'customer@firs.com', role: 'customer', blocked: false }, { name: 'Lt. James Holloway', email: 'gov@firs.com', role: 'govt', blocked: false }, { name: 'Ridge Arms LLC', email: 'dealer@firs.com', role: 'dealer', blocked: false }];
+        let allUsers = JSON.parse(localStorage.getItem('firs_all_users')) || defaultUsers;
+        if (!allUsers.find(u => u.email === email)) {
+          allUsers.push({ name: fullName, email, role: selectedRole, blocked: false });
+          localStorage.setItem('firs_all_users', JSON.stringify(allUsers));
+        }
+        document.getElementById('panel-register').classList.remove('active');
+        document.getElementById('panel-login').classList.remove('active');
+        document.getElementById('panel-success').style.display = 'block';
+        document.querySelector('.auth-tabs').style.display = 'none';
+        document.getElementById('success-msg').textContent = selectedRole === 'customer' ? 'Your account has been created. You can now sign in and start shopping.' : 'Your account is under review. You will receive an email within 24–72 hours.';
+      } catch (e) { alert('Registration failed: ' + (e.message || 'Could not connect to server.')); }
+    }
+  </script>
+</body>
+
+</html>

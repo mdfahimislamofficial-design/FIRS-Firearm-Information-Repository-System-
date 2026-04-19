@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIRS | User</title>
+    <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 24px; background: var(--bg0); }
+        .profile-container { max-width: 900px; margin: 0 auto; background: var(--bg1); border: 1px solid var(--border); padding: 32px; }
+        h1 { font-family: 'Bebas Neue'; font-size: 36px; letter-spacing: 2px; margin-bottom: 8px; }
+        .role-badge {
+            display: inline-block; padding: 4px 14px; font-family: 'Rajdhani'; font-size: 11px; letter-spacing: 2px;
+            text-transform: uppercase; background: rgba(200,33,58,0.1); border: 1px solid var(--border-r);
+            color: var(--red-b); margin-bottom: 20px;
+        }
+        .section { margin: 32px 0; }
+        .section-title {
+            font-family: 'Rajdhani'; font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+            border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-bottom: 20px; color: var(--red);
+        }
+        .field { margin-bottom: 20px; }
+        .field label { display: block; font-family: 'Rajdhani'; font-size: 11px; letter-spacing: 2px; color: var(--ash2); margin-bottom: 6px; }
+        .field input, .field select {
+            width: 100%; padding: 12px; background: var(--bg2); border: 1px solid var(--border);
+            color: var(--white); font-family: 'DM Sans';
+        }
+        .field input:read-only, .field input:disabled { opacity: 0.7; background: var(--bg1); }
+        .btn {
+            padding: 12px 28px; background: var(--red); border: none; color: white;
+            font-family: 'Rajdhani'; font-weight: 700; letter-spacing: 2px; cursor: pointer; margin-right: 12px;
+            transition: all 0.2s;
+        }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--ash); }
+        .btn:hover { background: var(--red-b); }
+        .upload-zone {
+            border: 1px dashed var(--ash3); padding: 24px; text-align: center; cursor: pointer;
+            transition: border 0.2s;
+        }
+        .upload-zone:hover { border-color: var(--red); }
+        .verification-status {
+            display: inline-block; padding: 4px 12px; background: rgba(34,160,90,0.1);
+            border: 1px solid rgba(34,160,90,0.3); color: var(--green);
+            font-family: 'Rajdhani'; font-size: 11px; letter-spacing: 1px;
+        }
+        .nav-back { margin-bottom: 20px; }
+        .nav-back a { color: var(--ash); text-decoration: none; font-family: 'Rajdhani'; }
+        .info-row { display: flex; gap: 24px; margin-bottom: 16px; }
+        .info-label { width: 140px; font-family: 'Rajdhani'; font-size: 12px; letter-spacing: 1px; color: var(--ash2); }
+        .info-value { font-family: 'DM Sans'; color: var(--white); }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <div class="nav-back"><a href="#" id="backLink">← Back to Dashboard</a></div>
+    <h1>MY <span style="color:var(--red);">PROFILE</span></h1>
+    <div class="role-badge" id="roleBadge">Loading...</div>
+
+    <!-- Personal Information -->
+    <div class="section">
+        <div class="section-title">Personal Information</div>
+        <div class="field">
+            <label>Full Name</label>
+            <input type="text" id="fullName" placeholder="Your name">
+        </div>
+        <div class="field">
+            <label>Email Address</label>
+            <input type="email" id="emailField" readonly disabled>
+        </div>
+        <div class="field">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" placeholder="(XXX) XXX-XXXX">
+        </div>
+        <button class="btn" id="updateProfileBtn">Update Profile</button>
+    </div>
+
+    <!-- Account Verification / Tier Info -->
+    <div class="section">
+        <div class="section-title">Account Verification</div>
+        <div id="verificationDisplay"></div>
+        <div id="upgradeSection" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- Additional Role‑Specific Fields (display only) -->
+    <div class="section" id="roleSpecificSection" style="display: none;">
+        <div class="section-title">Credentials & Access</div>
+        <div id="roleSpecificContent"></div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="section">
+        <div class="section-title">Change Password</div>
+        <div class="field">
+            <label>Current Password</label>
+            <input type="password" id="currentPw" placeholder="••••••••">
+        </div>
+        <div class="field">
+            <label>New Password</label>
+            <input type="password" id="newPw" placeholder="••••••••">
+        </div>
+        <div class="field">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPw" placeholder="••••••••">
+        </div>
+        <button class="btn btn-outline" id="changePwBtn">Update Password</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+    (function() {
+        const user = getCurrentUser();
+        if (!user) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // set back link based on role
+        const backLink = document.getElementById('backLink');
+        if (user.role === 'customer') backLink.href = 'customer_view.html';
+        else if (user.role === 'govt') backLink.href = 'govt_view.html';
+        else if (user.role === 'dealer') backLink.href = 'dealer_view.html';
+        else if (user.role === 'admin') backLink.href = 'admin_dashboard.html';
+        else backLink.href = 'index.html';
+
+        // role badge
+        const roleNames = { customer: 'Customer', govt: 'Government / Militia', dealer: 'Licensed Dealer', admin: 'Administrator' };
+        document.getElementById('roleBadge').textContent = roleNames[user.role] || user.role;
+
+        // basic info
+        document.getElementById('fullName').value = user.name || '';
+        document.getElementById('emailField').value = user.email || '';
+
+        // verification status
+        const verifyDiv = document.getElementById('verificationDisplay');
+        let verificationHtml = '';
+        if (user.role === 'customer') {
+            verificationHtml = `<span class="verification-status"><img src="./resources/icons/icons_tick.png" width="12"> Customer Tier (Basic) — Handguns & Revolvers</span>
+                                <p style="color:var(--ash); font-size:14px; margin-top:12px;">Upgrade to Government/Militia or Dealer access by submitting credentials.</p>`;
+        } else if (user.role === 'govt') {
+            verificationHtml = `<span class="verification-status" style="background:rgba(34,160,90,0.15); border-color:rgba(34,160,90,0.4); color:var(--green-b);"><img src="./resources/icons/icons_tick.png" width="12"> Government/Militia Verified — Full Catalog Access</span>`;
+        } else if (user.role === 'dealer') {
+            verificationHtml = `<span class="verification-status" style="background:rgba(200,160,32,0.15); border-color:rgba(200,160,32,0.4); color:var(--gold-b);"><img src="./resources/icons/icons_tick.png" width="12"> FFL Dealer Verified — Inventory & Bulk Orders</span>`;
+        } else if (user.role === 'admin') {
+            verificationHtml = `<span class="verification-status" style="background:rgba(200,33,58,0.2); border-color:var(--border-r); color:var(--red-b);"><img src="./resources/icons/icons_tick.png" width="12"> Administrator — Full Platform Control</span>`;
+        }
+        verifyDiv.innerHTML = verificationHtml;
+
+        // upgrade section (only for customers)
+        const upgradeSection = document.getElementById('upgradeSection');
+        if (user.role === 'customer') {
+            upgradeSection.innerHTML = `
+                <div class="field">
+                    <label>Requested Tier</label>
+                    <select id="tierSelect" style="width:100%; padding:12px; background:var(--bg2); border:1px solid var(--border); color:white;">
+                        <option value="customer">Customer (current)</option>
+                        <option value="govt">Government / Militia</option>
+                        <option value="dealer">Licensed Dealer (FFL)</option>
+                    </select>
+                </div>
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                    <div><img src="./resources/icons/icons_paper.png" width="24"> Click to upload license / credentials</div>
+                    <input type="file" id="fileInput" style="display:none;" accept=".pdf,.jpg,.png">
+                </div>
+                <button class="btn" style="margin-top:16px;" id="submitUpgradeBtn">Submit for Verification</button>
+            `;
+            document.getElementById('submitUpgradeBtn').addEventListener('click', function() {
+                alert('Verification request submitted. You will be notified once reviewed.');
+            });
+        }
+
+        // role‑specific fields (display only)
+        const roleSection = document.getElementById('roleSpecificSection');
+        const roleContent = document.getElementById('roleSpecificContent');
+        if (user.role === 'govt') {
+            roleSection.style.display = 'block';
+            roleContent.innerHTML = `
+                <div class="info-row"><span class="info-label">Department / Unit</span><span class="info-value">Metro Police Dept. (Badge #4427)</span></div>
+                <div class="info-row"><span class="info-label">Clearance Level</span><span class="info-value">Alpha · Full Catalog</span></div>
+            `;
+        } else if (user.role === 'dealer') {
+            roleSection.style.display = 'block';
+            roleContent.innerHTML = `
+                <div class="info-row"><span class="info-label">FFL Number</span><span class="info-value">1-TX-456-07-8X-44201</span></div>
+                <div class="info-row"><span class="info-label">Business Name</span><span class="info-value">Ridge Arms LLC</span></div>
+                <div class="info-row"><span class="info-label">Country of Operation</span><span class="info-value">United States</span></div>
+            `;
+        } else if (user.role === 'admin') {
+            roleSection.style.display = 'block';
+            roleContent.innerHTML = `
+                <div class="info-row"><span class="info-label">Admin Level</span><span class="info-value">SuperAdmin (Root)</span></div>
+                <div class="info-row"><span class="info-label">Last Security Audit</span><span class="info-value">2026-04-01</span></div>
+            `;
+        }
+
+        // update profile button
+        document.getElementById('updateProfileBtn').addEventListener('click', function() {
+            const newName = document.getElementById('fullName').value;
+            if (newName && newName !== user.name) {
+                user.name = newName;
+                setCurrentUser(user);
+                alert('Profile updated.');
+                if (typeof updateNavigation === 'function') updateNavigation();
+            } else {
+                alert('No changes detected.');
+            }
+        });
+
+        // change password (demo)
+        document.getElementById('changePwBtn').addEventListener('click', function() {
+            const cur = document.getElementById('currentPw').value;
+            const newPw = document.getElementById('newPw').value;
+            const confirm = document.getElementById('confirmPw').value;
+            if (!cur || !newPw || !confirm) {
+                alert('Please fill all password fields.');
+                return;
+            }
+            if (newPw !== confirm) {
+                alert('New passwords do not match.');
+                return;
+            }
+            alert('Password updated (demo).');
+            document.getElementById('currentPw').value = '';
+            document.getElementById('newPw').value = '';
+            document.getElementById('confirmPw').value = '';
+        });
+    })();
+</script>
+</body>
+</html>

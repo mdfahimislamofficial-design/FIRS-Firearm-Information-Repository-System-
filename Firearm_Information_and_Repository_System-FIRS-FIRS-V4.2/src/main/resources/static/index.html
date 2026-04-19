@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIRS | Homepage</title>
+  <link rel="icon" href="./resources/icons/icons_knife.png" type="image/x-icon">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* dropdown menu styles — show when user is logged in */
+    .nav-user { position: relative; }
+    .dropdown-menu {
+      display: none; position: absolute; right:0; top:100%;
+      background:var(--bg2); border:1px solid var(--border);
+      min-width:160px; z-index:50;
+    }
+    .nav-user:hover .dropdown-menu { display: block; }
+    .dropdown-menu a {
+      display: block; padding:10px 16px; color:var(--ash);
+      font-family:'Rajdhani'; font-size:13px; text-decoration:none;
+    }
+    .dropdown-menu a:hover { background:var(--bg3); color:var(--white); }
+    .nav-tier {
+      font-family:'Rajdhani'; font-size:9px; letter-spacing:2px;
+      padding:2px 8px; background:rgba(34,160,90,0.12);
+      border:1px solid rgba(34,160,90,0.25); color:var(--green-b);
+      margin-right:8px;
+    }
+    .nav-tier.govt { background:rgba(34,160,90,0.12); border-color:rgba(34,160,90,0.25); color:var(--green-b); }
+    .nav-tier.dealer { background:rgba(200,160,32,0.1); border-color:rgba(200,160,32,0.25); color:var(--gold-b); }
+    .nav-tier.admin { background:rgba(200,33,58,0.1); border-color:var(--border-r); color:var(--red-b); }
+    /* make sniper items clickable and position the add button */
+    .sniper-item {
+      cursor: pointer;
+      position: relative;
+    }
+    .sniper-item .prod-add {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+    }
+    /* testimonial carousel — infinite scroll */
+    .testimonials-carousel {
+      position: relative;
+      overflow: hidden;
+      margin: 0 -8px;
+      padding: 0 8px;
+    }
+    .testimonials-track {
+      display: flex;
+      transition: transform 0.5s ease;
+      will-change: transform;
+    }
+    .test-card {
+      flex: 0 0 calc(33.333% - 16px);
+      margin: 0 8px;
+      box-sizing: border-box;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .test-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      right: 20px;
+      font-family: 'Bebas Neue';
+      font-size: 100px;
+      color: rgba(200,33,58,0.08);
+      line-height: 1;
+    }
+    .test-stars { display: flex; gap: 4px; margin-bottom: 16px; }
+    .star { color: var(--red); font-size: 14px; }
+    .test-quote { font-size: 14px; line-height: 1.7; color: var(--ash); margin-bottom: 24px; position: relative; z-index: 1; }
+    .test-author { display: flex; align-items: center; gap: 14px; }
+    .test-avatar {
+      width: 42px; height: 42px; background: var(--bg3); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center; font-size: 18px; border-radius: 50%;
+    }
+    .test-name { font-family: 'Rajdhani'; font-size: 14px; font-weight: 700; color: var(--white); letter-spacing: 1px; }
+    .test-role { font-size: 11px; color: var(--ash2); letter-spacing: 1.5px; text-transform: uppercase; }
+    .test-badge {
+      font-family: 'Rajdhani'; font-size: 9px; letter-spacing: 2px; text-transform: uppercase;
+      color: var(--red); border: 1px solid var(--border-r); padding: 2px 8px; background: rgba(200,33,58,0.1);
+      margin-left: auto; align-self: flex-start;
+    }
+    @media (max-width: 900px) {
+      .test-card {
+        flex: 0 0 calc(100% - 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- main navigation bar — updated dynamically based on login state -->
+<nav>
+  <a href="index.html" class="logo">F<span>I</span>RS</a>
+  <ul>
+    <li><a href="#categories">Arsenal</a></li>
+    <li><a href="#handguns">Handguns</a></li>
+    <li><a href="#revolvers">Revolvers</a></li>
+    <li><a href="#restricted">Rifles & Carbines</a></li>
+    <li><a href="#brands">Partners</a></li>
+    <li><a href="#process">Process</a></li>
+  </ul>
+  <div class="nav-cta">
+    <!-- filled by updateNavigation() in script.js -->
+  </div>
+</nav>
+
+<!-- hero section with background effects -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-noise"></div>
+  <div class="hero-vignette"></div>
+  <div class="hero-accent">
+    <img src="./resources/images/final_1-Photoroom.png" alt="" srcset="" style="width: 1000px; height: 800px; margin-left: 50px;padding: 30px;">
+  </div>
+  <div class="hero-line"></div>
+  <div class="hero-content reveal">
+    <div class="hero-badge">Verified Marketplace — Licensed Arms Exchange</div>
+    <h1>PRECISION<br><span class="red">POWER</span> Pupil</h1>
+    <p class="hero-sub">The premier destination for licensed firearms, premium parts, and secure transfers. Every transaction, Arms Act - 1878. Every seller, background-checked.</p>
+    <div class="hero-actions">
+      <a href="#categories" class="btn-primary-lg">Explore Arsenal →</a>
+      <a href="auth_page.html" class="btn-outline-lg">Create Account</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">48<span>K+</span></div><div class="stat-label">Listed Items</div></div>
+      <div class="stat"><div class="stat-num">12<span>K+</span></div><div class="stat-label">Verified Sellers</div></div>
+      <div class="stat"><div class="stat-num">99<span>%</span></div><div class="stat-label">Compliance Rate</div></div>
+      <div class="stat"><div class="stat-num">50<span>+</span></div><div class="stat-label">States Active</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- scrolling ticker with compliance messages -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">FFL Verified Transfers <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Background Checks Required <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Licensed Dealers Only <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Secure Escrow Payments <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">48K+ Listed Items <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">NFA Compliant <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">ATF Regulatory Framework <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">FFL Verified Transfers <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Background Checks Required <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Licensed Dealers Only <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">Secure Escrow Payments <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">48K+ Listed Items <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">NFA Compliant <span class="ticker-sep">◆</span></span>
+    <span class="ticker-item">ATF Regulatory Framework <span class="ticker-sep">◆</span></span>
+  </div>
+</div>
+
+<!-- quick login form — hidden when user is logged in -->
+<section class="quick-login" id="quick-login-section">
+  <h3>QUICK <span style="color:var(--red);">SIGN IN</span></h3>
+  <div class="login-inline">
+    <div class="login-field"><label>EMAIL</label><input type="email" id="quickEmail" placeholder="your@email.com" value="customer@firs.com"></div>
+    <div class="login-field"><label>PASSWORD</label><input type="password" id="quickPassword" placeholder="••••••••" value="customer123"></div>
+    <button class="btn-login" onclick="handleQuickLogin()">Access Account →</button>
+    <a href="auth_page.html" style="color:var(--ash); font-family:'Rajdhani'; margin-left:auto;">Create account</a>
+  </div>
+</section>
+
+<!-- product categories grid -->
+<section id="categories">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">Browse Arsenal</div>
+      <div class="section-title">THE <span>ARMORY</span></div>
+      <div class="section-sub">Explore our full catalog. Access level varies by account type.</div>
+    </div>
+    <a href="#" class="view-all">View Full Catalog →</a>
+  </div>
+  <div class="cats-grid reveal">
+    <a href="#handguns" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_handgun.png" alt="Handgun icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Handguns</div>
+      <div class="cat-count">2,847 items</div>
+    </a>
+    <a href="#revolvers" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_revolver.png" alt="Revolver icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Revolvers</div>
+      <div class="cat-count">1,204 items</div>
+    </a>
+    <a href="#restricted" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_rifle.png" alt="Rifle icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Rifles & Carbines</div>
+      <div class="cat-count">3,580 items</div>
+      <span class="cat-badge">Restricted</span>
+    </a>
+    <a href="#restricted" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_shotgun.png" alt="Shotgun icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Shotguns</div>
+      <div class="cat-count">1,092 items</div>
+      <span class="cat-badge">Restricted</span>
+    </a>
+    <a href="#restricted" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_sniper.png" alt="Sniper icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Snipers</div>
+      <div class="cat-count">648 items</div>
+      <span class="cat-badge">Restricted</span>
+    </a>
+    <a href="#" class="cat-card">
+      <div class="cat-icon"><img src="./resources/icons/icons_settings.png" alt="Parts icon" style="width:32px; height:32px;"></div>
+      <div class="cat-name">Parts & Acc.</div>
+      <div class="cat-count">18,300 items</div>
+    </a>
+  </div>
+</section>
+
+<!-- featured handguns (dynamic from productCatalog) -->
+<section id="handguns" style="background:var(--bg1);">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">Open Access</div>
+      <div class="section-title">FEATURED <span>HANDGUNS</span></div>
+    </div>
+    <a href="#" class="view-all" id="see-all-handguns">See All Handguns →</a>
+  </div>
+  <div class="products-grid reveal" id="handguns-grid"></div>
+</section>
+
+<!-- featured revolvers -->
+<section id="revolvers" class="revolvers">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">Classic Precision</div>
+      <div class="section-title">FEATURED <span>REVOLVERS</span></div>
+    </div>
+    <a href="#" class="view-all" id="see-all-revolvers">See All Revolvers →</a>
+  </div>
+  <div class="rev-grid reveal" id="revolvers-featured"></div>
+</section>
+
+<!-- rifles & carbines section — changes based on user role -->
+<section id="restricted" class="rifles-wrap">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow" id="restricted-eyebrow">Verified Access Only</div>
+      <div class="section-title" id="restricted-title">RIFLES &amp; <span>CARBINES</span></div>
+    </div>
+    <a href="#" class="view-all" id="see-all-rifles-carbines">See All Rifles & Carbines →</a>
+  </div>
+
+  <!-- banner changes based on access level -->
+  <div id="restricted-banner-container"></div>
+
+  <!-- rifles grid container -->
+  <div id="rifles-grid-container"></div>
+
+  <!-- snipers section container (kept as separate precision section) -->
+  <div style="margin-top:120px;" id="snipers-section-container"></div>
+</section>
+
+<!-- trusted brand partners -->
+<div id="brands" class="brands">
+  <div class="brands-title">Trusted Manufacturer <br><span style="color: var(--red);font-size: 30px;font-weight: bold;">Partners</span></div>
+  <div class="brands-row">
+    <div class="brand-logo">GLOCK</div><div class="brand-logo">SIG SAUER</div><div class="brand-logo">SMITH & WESSON</div><div class="brand-logo">COLT</div>
+    <div class="brand-logo">RUGER</div><div class="brand-logo">BERETTA</div><div class="brand-logo">H&K</div><div class="brand-logo">REMINGTON</div>
+  </div>
+</div>
+
+<!-- how it works — steps -->
+<section id="process" class="process">
+  <div class="section-header reveal" style="margin-bottom:60px;">
+    <div>
+      <div class="section-eyebrow">How It Works</div>
+      <div class="section-title">LEGAL. <span>VERIFIED.</span> DELIVERED.</div>
+    </div>
+  </div>
+  <div class="process-steps reveal">
+    <div class="step"><div class="step-num">01</div><div class="step-title">Create Account</div><div class="step-desc">Register and select your account type. Civilians, government officers, dealers — each tier grants specific access.</div></div>
+    <div class="step"><div class="step-num">02</div><div class="step-title">Verify Identity</div><div class="step-desc">Submit required documentation. Our compliance engine verifies credentials and background within 24–72 hours.</div></div>
+    <div class="step"><div class="step-num">03</div><div class="step-title">Browse & Purchase</div><div class="step-desc">Access your tier-approved catalog. All transactions are escrowed and held pending FFL transfer confirmation.</div></div>
+    <div class="step"><div class="step-num">04</div><div class="step-title">FFL Transfer</div><div class="step-desc">Firearms ship to your registered FFL dealer. Receive in-person, background check completed, fully compliant.</div></div>
+  </div>
+</section>
+
+<!-- testimonials carousel — auto-scroll every 3 seconds -->
+<section class="testimonials">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-eyebrow">Client Testimonials</div>
+      <div class="section-title">TRUSTED BY <span>THOUSANDS</span></div>
+    </div>
+  </div>
+  <div class="testimonials-carousel reveal" id="testimonialsCarousel">
+    <div class="testimonials-track" id="testimonialsTrack">
+      <!-- testimonial cards (5 originals, will be cloned for infinite loop) -->
+      <div class="test-card">
+        <div class="test-stars"><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span></div>
+        <div class="test-quote">The verification process was thorough but surprisingly smooth. As a licensed FFL, having a compliant platform for my customers is invaluable.</div>
+        <div class="test-author">
+          <div class="test-avatar"><img src="./resources/icons/icons_people.png" alt="avatar" width="24"></div>
+          <div>
+            <div class="test-name">MARCUS T.</div>
+            <div class="test-role">FFL Licensed Dealer · TX</div>
+          </div>
+          <div class="test-badge">Verified Dealer</div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars"><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span></div>
+        <div class="test-quote">Finally a marketplace that takes compliance seriously. My department sourced four sidearms through FIRS. Government-tier verification was seamless.</div>
+        <div class="test-author">
+          <div class="test-avatar"><img src="./resources/icons/icons_people.png" alt="avatar" width="24"></div>
+          <div>
+            <div class="test-name">OFFICER D. HAYES</div>
+            <div class="test-role">Law Enforcement · WA</div>
+          </div>
+          <div class="test-badge">Gov. Verified</div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars"><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span></div>
+        <div class="test-quote">I was skeptical about buying a firearm online, but FIRS's FFL process gave me full confidence. The customer tier is perfect for legal personal purchases.</div>
+        <div class="test-author">
+          <div class="test-avatar"><img src="./resources/icons/icons_people.png" alt="avatar" width="24"></div>
+          <div>
+            <div class="test-name">RYAN K.</div>
+            <div class="test-role">Civilian Customer · CO</div>
+          </div>
+          <div class="test-badge">Verified Customer</div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars"><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span></div>
+        <div class="test-quote">As a small gun shop owner, FIRS has been a game-changer. The dealer portal makes inventory management and compliance tracking effortless.</div>
+        <div class="test-author">
+          <div class="test-avatar"><img src="./resources/icons/icons_people.png" alt="avatar" width="24"></div>
+          <div>
+            <div class="test-name">LINDA M.</div>
+            <div class="test-role">FFL Dealer · AZ</div>
+          </div>
+          <div class="test-badge">Verified Dealer</div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="test-stars"><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span><span class="star"><img src="./resources/icons/icons_star.png" alt="star" width="14"></span></div>
+        <div class="test-quote">The customer service is top-notch. They walked me through the FFL transfer process step by step. Highly recommend for first-time buyers.</div>
+        <div class="test-author">
+          <div class="test-avatar"><img src="./resources/icons/icons_people.png" alt="avatar" width="24"></div>
+          <div>
+            <div class="test-name">CARLOS R.</div>
+            <div class="test-role">Civilian Customer · FL</div>
+          </div>
+          <div class="test-badge">Verified Customer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- call to action — hidden if logged in -->
+<section class="cta-section" id="cta-section">
+  <div class="cta-bg"></div>
+  <div class="cta-content reveal">
+    <div class="section-eyebrow" style="justify-content:center;">Join The Network</div>
+    <div class="cta-title">READY TO <span>ACCESS</span> THE ARSENAL?</div>
+    <div class="cta-sub">Join 12,000+ verified users on the most compliant firearms marketplace in the country.</div>
+    <div class="cta-actions">
+      <a href="auth_page.html" class="btn-primary-lg">Create Free Account →</a>
+      <a href="#" class="btn-outline-lg">Learn About Tiers</a>
+    </div>
+  </div>
+</section>
+
+<!-- footer -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand"><a href="index.html" class="logo">F<span>I</span>RS</a><div class="footer-desc">The nation's most compliant firearms marketplace. Every seller verified. Every transfer legal. Every transaction secured.</div></div>
+    <div class="footer-col"><h4>Marketplace</h4><ul><li><a href="#">Handguns</a></li><li><a href="#">Revolvers</a></li><li><a href="#">Rifles & Carbines</a></li><li><a href="#">Parts & Accessories</a></li><li><a href="#">Ammunition</a></li></ul></div>
+    <div class="footer-col"><h4>Account</h4><ul><li><a href="auth_page.html">Register</a></li><li><a href="auth_page.html">Sign In</a></li><li><a href="#">Gov. Verification</a></li><li><a href="#">Dealer License</a></li><li><a href="#">FFL Finder</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="#">Compliance Center</a></li><li><a href="#">Transfer Guide</a></li><li><a href="#">FAQ</a></li><li><a href="#">Contact</a></li><li><a href="#">ATF Resources</a></li></ul></div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 FIRS Platform. All rights reserved. ATF Compliant Marketplace.</div>
+    <div class="footer-legal"><a href="#">Terms of Service</a><a href="#">Privacy Policy</a><a href="#">Compliance Policy</a><a href="#">FFL Requirements</a></div>
+  </div>
+</footer>
+
+<!-- cart drawer -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cart-drawer">
+  <div class="cart-header"><div class="cart-header-title">YOUR CART</div><button class="cart-close" onclick="toggleCart()"><img src="./resources/icons/icons_cross.png" alt="close" width="16"></button></div>
+  <div class="cart-body" id="cart-items-container"></div>
+  <div class="cart-footer">
+    <div class="cart-row"><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
+    <div class="cart-row"><span>FFL Transfer (est)</span><span id="cartFFL">$0</span></div>
+    <div class="cart-row total"><span>Total</span><span id="cartTotal">$0</span></div>
+    <a href="payment_page.html" id="checkoutLink"><button class="btn-checkout">Proceed to Checkout →</button></a>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+  // get dashboard url based on user role
+  function getDashboardUrl() {
+    const user = getCurrentUser();
+    if (!user) return 'auth_page.html';
+    if (user.role === 'customer') return 'customer_view.html';
+    // govt, dealer, admin go to govt_view (admin has own dashboard but link goes here)
+    return 'govt_view.html';
+  }
+
+  // update the "See All" links to point to the appropriate dashboard
+  function updateSeeAllLinks() {
+    const dashboardUrl = getDashboardUrl();
+    const links = [
+      'see-all-handguns',
+      'see-all-revolvers',
+      'see-all-rifles-carbines'
+    ];
+    links.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.href = dashboardUrl;
+    });
+  }
+
+  // check if user can view restricted items
+  function canAccessRestricted() {
+    const user = getCurrentUser();
+    return user && (user.role === 'govt' || user.role === 'dealer' || user.role === 'admin');
+  }
+
+  // hide quick login and cta sections if user is logged in
+  function updateIndexSections() {
+    const user = getCurrentUser();
+    const quickLogin = document.getElementById('quick-login-section');
+    const ctaSection = document.getElementById('cta-section');
+    if (user) {
+      if (quickLogin) quickLogin.style.display = 'none';
+      if (ctaSection) ctaSection.style.display = 'none';
+    } else {
+      if (quickLogin) quickLogin.style.display = 'block';
+      if (ctaSection) ctaSection.style.display = 'block';
+    }
+  }
+
+  // render rifles and carbines based on user access
+  function renderRestrictedSections() {
+    const hasAccess = canAccessRestricted();
+    const rifles = productCatalog.filter(p => p.category === 'Rifle');
+    const snipers = productCatalog.filter(p => p.category === 'Sniper');
+    const dashboardUrl = getDashboardUrl();
+
+    const eyebrow = document.getElementById('restricted-eyebrow');
+    const title = document.getElementById('restricted-title');
+    if (hasAccess) {
+      eyebrow.textContent = 'Full Access Granted';
+      title.innerHTML = 'RIFLES &amp; <span>CARBINES</span>';
+    } else {
+      eyebrow.textContent = 'Verified Access Only';
+      title.innerHTML = 'RIFLES &amp; <span>CARBINES</span>';
+    }
+
+    const bannerContainer = document.getElementById('restricted-banner-container');
+    if (hasAccess) {
+      bannerContainer.innerHTML = `
+        <div class="rifle-banner reveal">
+          <div class="rifle-banner-text">
+            <div class="rifle-banner-title"><img src="./resources/icons/icons_tick.png" alt="tick" width="20"> Government / Militia Access Active</div>
+            <div class="rifle-banner-sub">Full catalog unlocked. You may browse and purchase all rifles and carbines.</div>
+          </div>
+          <div>
+            <div class="restricted-notice" style="background:rgba(34,160,90,0.1); border-color:rgba(34,160,90,0.4); color:var(--green-b);">
+              <img src="./resources/icons/icons_tick.png" alt="tick" width="16"> Verified Credentials — Full Access
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      bannerContainer.innerHTML = `
+        <div class="rifle-banner reveal">
+          <div class="rifle-banner-text">
+            <div class="rifle-banner-title"><img src="./resources/icons/icons_lock.png" alt="lock" width="20"> Government & Militia Access Required</div>
+            <div class="rifle-banner-sub">Long arms, tactical rifles, and carbines require verified credentials.</div>
+          </div>
+          <div>
+            <div class="restricted-notice"><img src="./resources/icons/icons_lock.png" alt="lock" width="16"> Sign in with Gov/Militia credentials to unlock full catalog</div>
+            <div style="margin-top:12px;display:flex;gap:12px;">
+              <a href="auth_page.html" class="btn-red">Verify Credentials</a>
+              <a href="auth_page.html" class="btn-ghost">Learn More</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    const riflesGridContainer = document.getElementById('rifles-grid-container');
+    if (hasAccess) {
+      const displayRifles = rifles.slice(0, 3);
+      riflesGridContainer.innerHTML = `
+        <div class="rifles-grid reveal">
+          ${displayRifles.map(r => `
+            <div class="prod-card" onclick="addToCart('${r.id}')">
+              <div class="prod-img"><div class="prod-img-bg"></div><div class="prod-img-icon"><img src="${r.image}" alt="${r.name}" style="max-width:100%; max-height:160px;"></div></div>
+              <div class="prod-info">
+                <div class="prod-tag">${r.category} · ${r.caliber}</div>
+                <div class="prod-name">${r.name}</div>
+                <div class="prod-spec">${r.spec}</div>
+                <div class="prod-bottom">
+                  <div class="prod-price">$${r.price} <span>/ unit</span></div>
+                  <button class="prod-add" onclick="event.stopPropagation();addToCart('${r.id}')"><img src="./resources/icons/icons_plus.png" alt="add" width="16"></button>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else {
+      const displayRifles = rifles.slice(0, 3);
+      riflesGridContainer.innerHTML = `
+        <div class="rifles-grid reveal">
+          ${displayRifles.map(r => `
+            <div class="rifle-card">
+              <div class="rifle-lock">
+                <div class="rifle-lock-icon"><img src="./resources/icons/icons_lock.png" alt="lock" width="24"></div>
+                <div class="rifle-lock-text">Restricted Access</div>
+              </div>
+              <div class="rifle-img"><img src="${r.image}" alt="${r.name}" style="max-width:100%; max-height:160px;"></div>
+              <div class="rifle-info">
+                <div class="rifle-name">${r.name}</div>
+                <div class="rifle-spec">${r.spec}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    const snipersContainer = document.getElementById('snipers-section-container');
+    if (hasAccess) {
+      const displaySnipers = snipers.slice(0, 5);
+      const featuredSniper = displaySnipers[0];
+      const listSnipers = displaySnipers.slice(1, 5);
+      const sniperImgStyle = featuredSniper.id === 'mrad'
+              ? 'max-width:100%; max-height:300px; width:1000px; height:auto; object-fit:contain;'
+              : 'max-width:100%; max-height:300px;';
+      snipersContainer.innerHTML = `
+        <div class="section-header reveal" style="margin-bottom:32px;">
+          <div>
+            <div class="section-eyebrow">Precision Platforms</div>
+            <div class="section-title" style="font-size:clamp(30px,4vw,50px);">SNIPER <span>SYSTEMS</span></div>
+          </div>
+          <a href="${dashboardUrl}" class="view-all">See All Snipers →</a>
+        </div>
+        <div class="sniper-showcase reveal">
+          <div class="sniper-main" onclick="addToCart('${featuredSniper.id}')">
+            <div class="sniper-main-img"><img src="${featuredSniper.image}" alt="${featuredSniper.name}" style="${sniperImgStyle}"></div>
+            <div class="sniper-main-body">
+              <div class="sniper-main-tag">Precision Bolt-Action · ${featuredSniper.caliber}</div>
+              <div class="sniper-main-title">${featuredSniper.name}</div>
+              <div class="prod-bottom" style="margin-top:16px;">
+                <div class="prod-price" style="font-family:'Bebas Neue';font-size:24px;">$${featuredSniper.price}</div>
+                <button class="btn-red" onclick="event.stopPropagation();addToCart('${featuredSniper.id}')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="sniper-list">
+            ${listSnipers.map(s => `
+              <div class="sniper-item" onclick="addToCart('${s.id}')" style="position:relative;">
+                <div class="sniper-item-img"><img src="${s.image}" alt="${s.name}" style="max-width:70px; max-height:60px;"></div>
+                <div style="flex:1;">
+                  <div class="sniper-item-name">${s.name}</div>
+                  <div class="sniper-item-spec">${s.spec}</div>
+                  <div class="rev-small-price" style="margin-top:4px;">$${s.price}</div>
+                </div>
+                <button class="prod-add" onclick="event.stopPropagation();addToCart('${s.id}')" style="position:absolute; bottom:12px; right:12px;"><img src="./resources/icons/icons_plus.png" alt="add" width="16"></button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else {
+      const displaySnipers = snipers.slice(0, 5);
+      const featuredSniper = displaySnipers[0];
+      const listSnipers = displaySnipers.slice(1, 5);
+      const sniperImgStyle = featuredSniper.id === 'mrad'
+              ? 'max-width:100%; max-height:300px; width:1000px; height:auto; object-fit:contain;'
+              : 'max-width:100%; max-height:300px;';
+      snipersContainer.innerHTML = `
+        <div class="section-header reveal" style="margin-bottom:32px;">
+          <div>
+            <div class="section-eyebrow">Precision Platforms</div>
+            <div class="section-title" style="font-size:clamp(30px,4vw,50px);">SNIPER <span>SYSTEMS</span></div>
+          </div>
+          <a href="auth_page.html" class="view-all">See All Snipers →</a>
+        </div>
+        <div class="sniper-showcase reveal">
+          <div class="sniper-main">
+            <div class="access-overlay"><span class="access-tag"><img src="./resources/icons/icons_lock.png" alt="lock" width="14"> Clearance Required</span></div>
+            <div class="sniper-main-img"><img src="${featuredSniper.image}" alt="${featuredSniper.name}" style="${sniperImgStyle}"></div>
+            <div class="sniper-main-body">
+              <div class="sniper-main-tag">Precision Bolt-Action · ${featuredSniper.caliber}</div>
+              <div class="sniper-main-title">${featuredSniper.name}</div>
+              <div class="prod-bottom" style="margin-top:16px;">
+                <div class="prod-price" style="font-family:'Bebas Neue';font-size:24px;">$${featuredSniper.price}</div>
+                <button class="btn-red" style="opacity:0.5; cursor:not-allowed;" onclick="alert('Sign in with verified credentials to purchase.')">Add to Cart</button>
+              </div>
+            </div>
+          </div>
+          <div class="sniper-list">
+            ${listSnipers.map(s => `
+              <div class="sniper-item" style="position:relative;">
+                <div class="access-overlay"><span class="access-tag"><img src="./resources/icons/icons_lock.png" alt="lock" width="14"> Restricted</span></div>
+                <div class="sniper-item-img"><img src="${s.image}" alt="${s.name}" style="max-width:70px; max-height:60px;"></div>
+                <div style="flex:1;">
+                  <div class="sniper-item-name">${s.name}</div>
+                  <div class="sniper-item-spec">${s.spec}</div>
+                  <div class="rev-small-price" style="margin-top:4px;">$${s.price}</div>
+                </div>
+                <button class="prod-add" style="opacity:0.5; cursor:not-allowed; position:absolute; bottom:12px; right:12px;" onclick="alert('Sign in to add to cart.')"><img src="./resources/icons/icons_plus.png" alt="add" width="16"></button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  }
+
+  function handleQuickLogin() {
+    const email = document.getElementById('quickEmail').value;
+    const password = document.getElementById('quickPassword').value;
+    if (typeof authenticateAndRedirect === 'function') {
+      authenticateAndRedirect(email, password);
+    } else {
+      alert('Authentication system not loaded.');
+    }
+  }
+
+  function renderIndexProducts() {
+    if (typeof productCatalog === 'undefined') {
+      setTimeout(renderIndexProducts, 50);
+      return;
+    }
+    const nonRestricted = productCatalog.filter(p => !p.restricted);
+    const handguns = nonRestricted.filter(p => p.category === 'Handgun').slice(0, 4);
+    const revolvers = nonRestricted.filter(p => p.category === 'Revolver');
+    const dashboardUrl = getDashboardUrl();
+
+    // Custom widths and styles for specific handguns on the homepage
+    const handgunStyles = {
+      'czp10c': 'max-width:100%; max-height:200px; width:230px; height:auto; object-fit:contain;',
+      'm1911': 'max-width:100%; max-height:200px; width:300px; height:auto; object-fit:contain;'
+    };
+
+    const handgunsGrid = document.getElementById('handguns-grid');
+    if (handgunsGrid) {
+      handgunsGrid.innerHTML = handguns.map(p => {
+        const imgStyle = handgunStyles[p.id] || 'max-width:100%; max-height:200px;';
+        return `
+        <div class="prod-card" onclick="addToCart('${p.id}')">
+          <div class="prod-img"><div class="prod-img-bg"></div><div class="prod-img-icon"><img src="${p.image}" alt="${p.name}" style="${imgStyle}"></div></div>
+          <div class="prod-info">
+            <div class="prod-tag">Semi-Automatic · ${p.caliber}</div>
+            <div class="prod-name">${p.name}</div>
+            <div class="prod-spec">Caliber: ${p.caliber} · ${p.spec}</div>
+            <div class="prod-bottom">
+              <div class="prod-price">$${p.price} <span>/ unit</span></div>
+              <button class="prod-add" onclick="event.stopPropagation();addToCart('${p.id}')"><img src="./resources/icons/icons_plus.png" alt="add" width="16"></button>
+            </div>
+          </div>
+        </div>
+      `}).join('');
+    }
+
+    const revGrid = document.getElementById('revolvers-featured');
+    if (revGrid && revolvers.length > 0) {
+      const featRevolver = revolvers.find(r => r.id === 'sw686') || revolvers[0];
+      const otherRevolvers = revolvers.filter(r => r.id !== featRevolver.id).slice(0, 4);
+      revGrid.innerHTML = `
+        <div class="rev-feat">
+          <div class="rev-feat-img"><img src="${featRevolver.image}" alt="${featRevolver.name}" style="max-width:100%; max-height:280px;"><div class="rev-feat-overlay"></div></div>
+          <div class="rev-feat-body">
+            <div class="prod-tag">Double-Action · ${featRevolver.caliber}</div>
+            <div class="rev-feat-title">${featRevolver.name}</div>
+            <div class="rev-feat-desc">${featRevolver.spec}</div>
+            <div class="prod-bottom">
+              <div class="prod-price" style="font-family:'Bebas Neue';font-size:28px">$${featRevolver.price}</div>
+              <button class="btn-red" onclick="addToCart('${featRevolver.id}')">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+        <div class="rev-small-grid">
+          ${otherRevolvers.map(p => `
+            <div class="rev-small" onclick="addToCart('${p.id}')" style="position:relative;">
+              <div class="rev-small-img"><img src="${p.image}" alt="${p.name}" style="max-width:80px; max-height:70px;"></div>
+              <div style="flex:1;">
+                <div class="rev-small-name">${p.name}</div>
+                <div class="rev-small-spec">${p.spec}</div>
+                <div class="rev-small-price">$${p.price}</div>
+              </div>
+              <button class="prod-add" onclick="event.stopPropagation();addToCart('${p.id}')" style="position:absolute; bottom:16px; right:16px;"><img src="./resources/icons/icons_plus.png" alt="add" width="16"></button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    updateSeeAllLinks();
+    renderRestrictedSections();
+  }
+
+  // make the testimonial carousel auto-scroll every 3 seconds with infinite loop
+  function initTestimonialsCarousel() {
+    const track = document.getElementById('testimonialsTrack');
+    if (!track) return;
+
+    const cards = Array.from(track.children);
+    const cardCount = cards.length;
+    if (cardCount === 0) return;
+
+    // clone all cards for seamless loop
+    cards.forEach(card => {
+      const clone = card.cloneNode(true);
+      track.appendChild(clone);
+    });
+
+    let currentIndex = 0;
+    const totalCards = track.children.length;
+    const cardWidth = cards[0].offsetWidth + 16; // including margin (8px left+right)
+
+    function moveToNext() {
+      currentIndex++;
+      track.style.transition = 'transform 0.5s ease';
+      track.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+
+      // reset to start when we've reached the cloned set
+      if (currentIndex >= cardCount) {
+        setTimeout(() => {
+          track.style.transition = 'none';
+          currentIndex = 0;
+          track.style.transform = `translateX(0)`;
+        }, 500);
+      }
+    }
+
+    // auto-scroll every 3 seconds
+    let interval = setInterval(moveToNext, 3000);
+
+    // pause on hover for better UX
+    const carousel = document.getElementById('testimonialsCarousel');
+    carousel.addEventListener('mouseenter', () => clearInterval(interval));
+    carousel.addEventListener('mouseleave', () => {
+      interval = setInterval(moveToNext, 3000);
+    });
+
+    // update card width on window resize
+    window.addEventListener('resize', () => {
+      const newCardWidth = cards[0].offsetWidth + 16;
+      track.style.transition = 'none';
+      track.style.transform = `translateX(-${currentIndex * newCardWidth}px)`;
+      track.offsetHeight; // force reflow
+      track.style.transition = 'transform 0.5s ease';
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    if (typeof updateNavigation === 'function') updateNavigation();
+    updateIndexSections();
+    renderIndexProducts();
+    updateCartUI();
+    initTestimonialsCarousel();
+  });
+
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'firs_user') {
+      if (typeof updateNavigation === 'function') updateNavigation();
+      updateIndexSections();
+      renderIndexProducts();
+    }
+  });
+</script>
+</body>
+</html>
